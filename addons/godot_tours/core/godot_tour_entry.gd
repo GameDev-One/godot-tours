@@ -1,3 +1,4 @@
+class_name GodotTourEntry
 extends Resource
 
 ## The title of the tour, displayed in the welcome menu to select tours upon opening Godot.

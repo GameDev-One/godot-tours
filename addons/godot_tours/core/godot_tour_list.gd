@@ -4,4 +4,4 @@ extends Resource
 
 ## A tour entry to be displayed in the welcome menu.
 ## The list of tours to be displayed in the welcome menu.
-@export var tours: Array = []
+@export var tours: Array[GodotTourEntry] = []
