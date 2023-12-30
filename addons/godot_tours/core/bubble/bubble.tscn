@@ -14,7 +14,7 @@
 [node name="Bubble" type="PanelContainer"]
 top_level = true
 z_index = 1000
-custom_minimum_size = Vector2(512, 0)
+custom_minimum_size = Vector2(720, 0)
 offset_right = 395.0
 offset_bottom = 174.0
 theme = ExtResource("1_yjsvg")
@@ -44,6 +44,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"LabelTitle"
 text = "The missing \"walls\""
+horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="ButtonClose" type="Button" parent="MarginContainer/ViewContent/HBoxContainer2"]
@@ -154,7 +155,7 @@ theme_override_colors/font_hover_color = Color(0.415686, 0.0980392, 0, 1)
 theme_override_colors/font_focus_color = Color(0.415686, 0.0980392, 0, 1)
 theme_override_colors/font_hover_pressed_color = Color(0.415686, 0.0980392, 0, 1)
 theme_override_colors/font_disabled_color = Color(0.415686, 0.0980392, 0, 1)
-text = "END TOUR AND CONTINUE LEARNING"
+text = "EXIT TUTORIAL"
 
 [node name="FooterSpacer" type="Control" parent="MarginContainer/ViewContent"]
 unique_name_in_owner = true
