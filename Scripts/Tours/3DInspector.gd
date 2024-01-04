@@ -10,6 +10,9 @@ extends "res://addons/godot_tours/core/tour.gd"
 #endregion
 
 #region CONSTANTS
+const ICONS = {
+	WorldEnvironmentSvg = "res://Assets/WorldEnvironment.svg"
+}
 #endregion
 
 #region EXPORT VARS
@@ -53,6 +56,23 @@ func _Steps0000Intro() -> void:
 		"[center][b]Let's get started![/b][/center]",
 		])
 	queue_command(bubble.avatar.do_wink)
+	complete_step()
+	
+	# 0011: 3D Scene Overview 
+	context_set_3d()
+	highlight_controls([interface.spatial_editor])
+	bubble_set_title("INSPECTOR OVERVIEW")
+	bubble_move_and_anchor(interface.base_control, Bubble.At.BOTTOM_RIGHT)
+	bubble_set_avatar_at(Bubble.AvatarAt.LEFT)
+	bubble_add_text([
+		"In Godot, the 3D inspector is a powerful tool for manipulating and inspecting 3D objects in your scene."
+	])
+	#bubble_add_text([
+		#"Before other objects will appear in-game your 3D scene will need a:\n 
+		#[indent][b][ul][img]res://Assets/WorldEnvironment.svg[/img] World Environment[/ul][/b][/indent]
+		#[indent][b][ul][img]res://Assets/Camera3D.svg[/img] Camera3D[/ul][/b][/indent]
+		#[indent][b][ul][img]res://Assets/DirectionalLight3D.svg[/img] Light[/ul][/b][/indent]"
+	#])
 	complete_step()
 	pass
 

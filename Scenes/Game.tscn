@@ -10,10 +10,8 @@
 
 [sub_resource type="Environment" id="Environment_4wl74"]
 background_mode = 1
-fog_enabled = true
-fog_light_color = Color(0, 0, 0, 1)
 volumetric_fog_enabled = true
-volumetric_fog_density = 0.0047
+volumetric_fog_density = 0.0115
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_1acya"]
 top_radius = 5.0
@@ -48,7 +46,6 @@ material = SubResource("StandardMaterial3D_g2x0p")
 [node name="OmniLight3D" type="OmniLight3D" parent="Floor"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 light_color = Color(1, 0.826213, 0.636288, 1)
-light_energy = 3.0
 omni_range = 10.0
 
 [node name="Burger" parent="." instance=ExtResource("2_nk0vw")]

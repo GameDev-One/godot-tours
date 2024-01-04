@@ -11,9 +11,10 @@ config_version=5
 [application]
 
 config/name="Tutorial - 3D Inspector"
+config/tags=PackedStringArray("3d", "tutorial")
 run/main_scene="res://Scenes/Game.tscn"
 config/features=PackedStringArray("4.2", "GL Compatibility")
-config/icon="res://Assets/icon.svg"
+config/icon="res://Assets/3DNavigation.png"
 
 [editor]
 
