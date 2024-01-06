@@ -1,0 +1,46 @@
+[gd_scene load_steps=3 format=3 uid="uid://cd4f272jwuy15"]
+
+[ext_resource type="Material" uid="uid://cg1o23m5xppwu" path="res://Resources/Prototype/PrototypeBlack.material" id="1_mq73r"]
+[ext_resource type="Material" uid="uid://ro5uqdpum3pp" path="res://Resources/Prototype/PrototypeGreen.material" id="2_qetf5"]
+
+[node name="World" type="Node3D"]
+
+[node name="Floor" type="CSGBox3D" parent="."]
+size = Vector3(10, 1, 10)
+material = ExtResource("1_mq73r")
+
+[node name="Cave1Floor" type="CSGBox3D" parent="Floor"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -12.0489)
+size = Vector3(20, 1, 20)
+material = ExtResource("1_mq73r")
+
+[node name="Cave1Entance" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 2, -2.18727)
+radius = 6.0
+sides = 10
+material = ExtResource("2_qetf5")
+
+[node name="Hole" type="CSGCylinder3D" parent="Cave1Entance"]
+operation = 2
+radius = 4.0
+sides = 12
+material = ExtResource("2_qetf5")
+
+[node name="Cave1" type="CSGSphere3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.41518, -13.3835)
+radius = 12.0
+material = ExtResource("2_qetf5")
+
+[node name="Hole" type="CSGCylinder3D" parent="Cave1"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.415177, 10.0341)
+operation = 2
+radius = 4.0
+height = 5.0
+sides = 12
+material = ExtResource("2_qetf5")
+
+[node name="Hole2" type="CSGSphere3D" parent="Cave1"]
+operation = 2
+radius = 10.0
+radial_segments = 10
+material = ExtResource("2_qetf5")

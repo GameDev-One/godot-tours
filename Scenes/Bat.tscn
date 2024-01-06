@@ -1,0 +1,29 @@
+[gd_scene load_steps=6 format=3 uid="uid://da6xnsfrenuwp"]
+
+[ext_resource type="PackedScene" uid="uid://tyjgdu65yj3m" path="res://Assets/Bat/round_bat_skin.tscn" id="1_b0n2y"]
+[ext_resource type="Script" path="res://Scripts/Bat.gd" id="1_f8cyx"]
+[ext_resource type="Script" path="res://Scripts/AI/Unstructured/BatAI.gd" id="3_eoisp"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_e6oex"]
+radius = 0.72458
+
+[sub_resource type="Curve3D" id="Curve3D_ve7nv"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1.5, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, -2, 1.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[node name="Bat" type="CharacterBody3D"]
+script = ExtResource("1_f8cyx")
+
+[node name="AI" type="Node" parent="."]
+script = ExtResource("3_eoisp")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_e6oex")
+
+[node name="Skin" parent="." instance=ExtResource("1_b0n2y")]
+
+[node name="Path" type="Path3D" parent="."]
+curve = SubResource("Curve3D_ve7nv")

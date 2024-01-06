@@ -1,6 +1,83 @@
-[gd_scene load_steps=2 format=3 uid="uid://b1ny3s8x7ou26"]
+[gd_scene load_steps=8 format=3 uid="uid://b1ny3s8x7ou26"]
 
 [ext_resource type="Script" path="res://Scripts/Game.gd" id="1_is6n2"]
+[ext_resource type="PackedScene" uid="uid://bdyptm7smjixm" path="res://Assets/GDBot/gdbot_skin.tscn" id="2_yhdrn"]
+[ext_resource type="Script" path="res://Scripts/Utility/FPSCounter.gd" id="3_kpwkm"]
+[ext_resource type="Material" uid="uid://6rw2nvv6duf7" path="res://Resources/AnimatedDiamondPattern.material" id="5_aktto"]
+[ext_resource type="PackedScene" uid="uid://cd4h7yd0ctapx" path="res://Scenes/BatFinal.tscn" id="5_eufrp"]
+[ext_resource type="PackedScene" uid="uid://cd4f272jwuy15" path="res://Scenes/World.tscn" id="5_nxejy"]
+
+[sub_resource type="Environment" id="Environment_irqnj"]
+background_mode = 3
+background_canvas_max_layer = -1
 
 [node name="Game" type="Node"]
 script = ExtResource("1_is6n2")
+
+[node name="BatFinal" parent="." instance=ExtResource("5_eufrp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0387908, 0, 0)
+MovementSpeed = 2.0
+PATH_MODE = "Oval"
+
+[node name="SunLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.546687, 0.837337, 0, -0.837337, 0.546687, 0, 10, 0)
+shadow_enabled = true
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5.01325)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Camera"]
+shadow_enabled = true
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Root" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="FPSCounter" type="RichTextLabel" parent="UI/Root"]
+custom_minimum_size = Vector2(196, 0)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -23.0
+offset_right = 40.0
+grow_vertical = 0
+bbcode_enabled = true
+text = "FPS: XX.XX"
+fit_content = true
+scroll_active = false
+script = ExtResource("3_kpwkm")
+
+[node name="World" parent="." instance=ExtResource("5_nxejy")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="World"]
+environment = SubResource("Environment_irqnj")
+
+[node name="Canvas" type="CanvasLayer" parent="World/WorldEnvironment"]
+layer = -1
+
+[node name="Bg" type="ColorRect" parent="World/WorldEnvironment/Canvas"]
+material = ExtResource("5_aktto")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Lights" type="Node" parent="World"]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="World/Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.865787, -12.4135)
+light_color = Color(0.760784, 0.403922, 1, 1)
+shadow_enabled = true
+omni_range = 12.0
+
+[node name="GDbotSkin" parent="." instance=ExtResource("2_yhdrn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.438607, -1)
