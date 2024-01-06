@@ -1,11 +1,11 @@
 [gd_scene load_steps=8 format=3 uid="uid://b1ny3s8x7ou26"]
 
 [ext_resource type="Script" path="res://Scripts/Game.gd" id="1_is6n2"]
-[ext_resource type="PackedScene" uid="uid://bdyptm7smjixm" path="res://Assets/GDBot/gdbot_skin.tscn" id="2_yhdrn"]
 [ext_resource type="Script" path="res://Scripts/Utility/FPSCounter.gd" id="3_kpwkm"]
 [ext_resource type="Material" uid="uid://6rw2nvv6duf7" path="res://Resources/AnimatedDiamondPattern.material" id="5_aktto"]
 [ext_resource type="PackedScene" uid="uid://cd4h7yd0ctapx" path="res://Scenes/BatFinal.tscn" id="5_eufrp"]
 [ext_resource type="PackedScene" uid="uid://cd4f272jwuy15" path="res://Scenes/World.tscn" id="5_nxejy"]
+[ext_resource type="PackedScene" uid="uid://ciqrpd5675boy" path="res://Player/Player.tscn" id="6_jrj3b"]
 
 [sub_resource type="Environment" id="Environment_irqnj"]
 background_mode = 3
@@ -15,18 +15,12 @@ background_canvas_max_layer = -1
 script = ExtResource("1_is6n2")
 
 [node name="BatFinal" parent="." instance=ExtResource("5_eufrp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0387908, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0387908, 2.09717, -14.8893)
 MovementSpeed = 2.0
-PATH_MODE = "Oval"
+PATH_MODE = "Star"
 
 [node name="SunLight" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.546687, 0.837337, 0, -0.837337, 0.546687, 0, 10, 0)
-shadow_enabled = true
-
-[node name="Camera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 5.01325)
-
-[node name="SpotLight3D" type="SpotLight3D" parent="Camera"]
 shadow_enabled = true
 
 [node name="UI" type="CanvasLayer" parent="."]
@@ -74,10 +68,16 @@ grow_vertical = 2
 [node name="Lights" type="Node" parent="World"]
 
 [node name="OmniLight3D" type="OmniLight3D" parent="World/Lights"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.865787, -12.4135)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.36962, -12.4135)
 light_color = Color(0.760784, 0.403922, 1, 1)
+light_energy = 3.0
 shadow_enabled = true
 omni_range = 12.0
 
-[node name="GDbotSkin" parent="." instance=ExtResource("2_yhdrn")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, -0.438607, -1)
+[node name="OmniLight3D2" type="OmniLight3D" parent="World/Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -12.413)
+light_color = Color(0.760784, 0.403922, 1, 1)
+light_energy = 2.0
+omni_range = 12.0
+
+[node name="Player" parent="." instance=ExtResource("6_jrj3b")]

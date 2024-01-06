@@ -67,3 +67,9 @@ curve = SubResource("Curve3D_045sb")
 
 [node name="OvalPath" type="Path3D" parent="."]
 curve = SubResource("Curve3D_snyi7")
+
+[node name="Description" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+text = "Bat
+Path Mode: XXXXX
+Speed: 1"

@@ -27,11 +27,14 @@ const BATFINALMATERIAL = preload("res://Resources/BatFinal.material")
 #endregion
 
 #region ONREADY VARS
+@onready var Description: Label3D = $Description
 #endregion
 
 #region PUBLIC METHODS
 func _ready():
 	$Skin.MeshOverride = BATFINALMATERIAL
+	
+	Description.text = name + "\nPath Mode: " + PATH_MODE + "\nSpeed: " + str(MovementSpeed)
 	pass
 #endregion
 

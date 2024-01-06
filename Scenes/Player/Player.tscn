@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://cte1v4mcvc2cv"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_yltvl"]
+height = 1.75
+
+[node name="Player" type="CharacterBody3D"]
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
+shape = SubResource("CapsuleShape3D_yltvl")
