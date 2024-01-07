@@ -24,7 +24,6 @@ var _current_pivot_type: CAMERA_PIVOT
 var _rotation_input: float
 var _tilt_input: float
 var _mouse_input := false
-var _joystick_input:= false
 var _offset: Vector3
 var _anchor: CharacterBody3D
 var _euler_rotation: Vector3
@@ -32,16 +31,10 @@ var _euler_rotation: Vector3
 
 func _unhandled_input(event: InputEvent) -> void:
 	_mouse_input = event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED
-	_joystick_input = event is InputEventJoypadMotion
 	
 	if _mouse_input:
 		_rotation_input = -event.relative.x * mouse_sensitivity
 		_tilt_input = -event.relative.y * mouse_sensitivity
-	elif _joystick_input:
-		if event.axis == JOY_AXIS_RIGHT_X:
-			_rotation_input = -event.axis_value * joystick_sensitivity
-		if event.axis == JOY_AXIS_RIGHT_Y:
-			_tilt_input = -event.axis_value * joystick_sensitivity
 
 
 func _physics_process(delta: float) -> void:

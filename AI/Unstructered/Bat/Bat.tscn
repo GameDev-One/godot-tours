@@ -1,0 +1,46 @@
+[gd_scene load_steps=7 format=3 uid="uid://di7ltdl5ja45j"]
+
+[ext_resource type="PackedScene" uid="uid://c8jiyn2licuej" path="res://AI/Unstructered/Bat/Model/Model.tscn" id="1_eq381"]
+[ext_resource type="Script" path="res://AI/Unstructered/Bat/Bat.gd" id="1_yqwqn"]
+[ext_resource type="Script" path="res://AI/Unstructered/Bat/AI.gd" id="3_ge7y4"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_axcf8"]
+radius = 0.75
+
+[sub_resource type="Curve3D" id="Curve3D_045sb"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, -2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0)
+}
+point_count = 6
+
+[sub_resource type="Curve3D" id="Curve3D_snyi7"]
+_data = {
+"points": PackedVector3Array(-1.167, 0.604742, 0.00254822, 0.5, 0, -0.003, 0, 0, 0, 0, -0.5, 0, 0, 0, 0, 1, 0.5, 0, 0, 0, 0, 0, 0.5, 0, 1, 2.5, 0, 0, 0, 0, -0.5, 0, 0, 0, 3, 0, 0, 0.5, 0, 0, 0, 0, -1, 2.5, 0, 0, 0, 0, 0, -0.5, 0, -1, 0.5, 0, -0.5, 0, 0, 0, 0, 0, 0, 0, 0),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0)
+}
+point_count = 7
+
+[node name="Bat" type="CharacterBody3D"]
+script = ExtResource("1_yqwqn")
+
+[node name="Description" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+billboard = 2
+text = "Bat
+Path Mode: XXXXX
+Speed: X"
+
+[node name="AI" type="Node" parent="."]
+script = ExtResource("3_ge7y4")
+
+[node name="Model" parent="." instance=ExtResource("1_eq381")]
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_axcf8")
+
+[node name="StarPath" type="Path3D" parent="."]
+curve = SubResource("Curve3D_045sb")
+
+[node name="OvalPath" type="Path3D" parent="."]
+curve = SubResource("Curve3D_snyi7")

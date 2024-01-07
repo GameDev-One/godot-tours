@@ -2,8 +2,8 @@
 
 [ext_resource type="Script" path="res://Scripts/Game.gd" id="1_is6n2"]
 [ext_resource type="Material" uid="uid://6rw2nvv6duf7" path="res://Resources/AnimatedDiamondPattern.material" id="5_aktto"]
-[ext_resource type="PackedScene" uid="uid://cd4h7yd0ctapx" path="res://Scenes/BatFinal.tscn" id="5_eufrp"]
 [ext_resource type="PackedScene" uid="uid://cd4f272jwuy15" path="res://Scenes/World.tscn" id="5_nxejy"]
+[ext_resource type="PackedScene" uid="uid://di7ltdl5ja45j" path="res://AI/Unstructered/Bat/Bat.tscn" id="5_umqte"]
 [ext_resource type="PackedScene" uid="uid://ciqrpd5675boy" path="res://Player/Player.tscn" id="6_jrj3b"]
 
 [sub_resource type="Environment" id="Environment_irqnj"]
@@ -12,15 +12,6 @@ background_canvas_max_layer = -1
 
 [node name="Game" type="Node"]
 script = ExtResource("1_is6n2")
-
-[node name="BatFinal" parent="." instance=ExtResource("5_eufrp")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0387908, 2.09717, -14.8893)
-MovementSpeed = 2.0
-PATH_MODE = "Star"
-
-[node name="SunLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.546687, 0.837337, 0, -0.837337, 0.546687, 0, 10, 0)
-shadow_enabled = true
 
 [node name="World" parent="." instance=ExtResource("5_nxejy")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -38,6 +29,11 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
+
+[node name="SunLight" type="DirectionalLight3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 0.546687, 0.837337, 0, -0.837337, 0.546687, 0, 11, 0)
+shadow_enabled = true
 
 [node name="Lights" type="Node" parent="World"]
 
@@ -67,3 +63,117 @@ light_energy = 2.0
 omni_range = 20.0
 
 [node name="Player" parent="." instance=ExtResource("6_jrj3b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.99038)
+
+[node name="Enemies" type="Node" parent="."]
+
+[node name="Bat0" parent="Enemies" instance=ExtResource("5_umqte")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00300181, 1.30808, -14.1611)
+
+[node name="Bat1" parent="Enemies" instance=ExtResource("5_umqte")]
+transform = Transform3D(0.588308, 0, -0.808637, 0, 1, 0, 0.808637, 0, 0.588308, 20.0698, 1.30808, -32.2634)
+
+[node name="Bat2" parent="Enemies" instance=ExtResource("5_umqte")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.73, 1.30808, -46.8918)
+
+[node name="Bat3" parent="Enemies" instance=ExtResource("5_umqte")]
+transform = Transform3D(0.919335, 0, 0.393477, 0, 1, 0, -0.393477, 0, 0.919335, 10.8659, 1.30808, -36.8769)
+
+[node name="Bat4" parent="Enemies" instance=ExtResource("5_umqte")]
+transform = Transform3D(0.684802, 0, 0.72873, 0, 1, 0, -0.72873, 0, 0.684802, 23.0836, 1.30808, -38.9371)
+
+[node name="Help" type="Control" parent="."]
+custom_minimum_size = Vector2(256, 0)
+layout_mode = 3
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 0
+grow_vertical = 2
+
+[node name="Bg" type="ColorRect" parent="Help"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.117647)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Help"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="Help/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "CONTROLS"
+horizontal_alignment = 1
+vertical_alignment = 1
+uppercase = true
+
+[node name="MarginContainer" type="MarginContainer" parent="Help/VBoxContainer"]
+custom_minimum_size = Vector2(0, 512)
+layout_mode = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="TabContainer" type="TabContainer" parent="Help/VBoxContainer/MarginContainer"]
+layout_mode = 2
+tab_alignment = 1
+
+[node name="Keyboard" type="Control" parent="Help/VBoxContainer/MarginContainer/TabContainer"]
+layout_mode = 2
+
+[node name="Label" type="RichTextLabel" parent="Help/VBoxContainer/MarginContainer/TabContainer/Keyboard"]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+text = "WASD - Movement
+Mouse - Move Camera
+Space - Jump
+Left Mouse - Shoot
+Right Mouse - Aim
+Tab - Cycle Weapons
+Esc - Quit Game"
+fit_content = true
+scroll_active = false
+
+[node name="Gamepad" type="Control" parent="Help/VBoxContainer/MarginContainer/TabContainer"]
+visible = false
+layout_mode = 2
+
+[node name="Label" type="RichTextLabel" parent="Help/VBoxContainer/MarginContainer/TabContainer/Gamepad"]
+custom_minimum_size = Vector2(40, 40)
+layout_mode = 2
+offset_top = 35.0
+offset_right = 256.0
+offset_bottom = 104.0
+bbcode_enabled = true
+text = "Left Joystick - Movement
+Right Joystick - Move Camera
+Xbox A / Sony Cross - Jump
+Xbox RB /Sony R1 - Shoot
+Xbox LB / Sony L1- Aim
+Xbox Y / Sony Triangle - Cycle Weapons
+Xbox Home / Sony PS - Quit Game"
+fit_content = true
+scroll_active = false
+
+[node name="Label" type="Label" parent="Help/VBoxContainer"]
+layout_mode = 2
+text = "Press (P) or (START) to 
+Show/Hide"
+horizontal_alignment = 1

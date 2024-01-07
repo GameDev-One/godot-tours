@@ -1,7 +1,6 @@
-@icon("res://Assets/Brain.svg")
 extends Node
 
-## Unstructed Ai that controls how the Bat moves along a specified path.
+## Unstructed AI that controls how the Bat moves along a specified path.
 ##
 ## Path3D will generate several points that define the path.
 ## This is useful for when the path uses curves instead of straight lines.
@@ -51,13 +50,13 @@ func _physics_process(delta):
 	
 	# Move the character
 	_Bat.move_and_slide()
-	
-	
+	pass
 
 
 func _ready():
-	# Wait for the owner of the scene to be ready before accessing sibling nodes.
-	# This will guarentee those Nodes are ready to be accessed
+	# Wait for the owner of the scene to be ready before accessing its children.
+	# This will guarentee children Nodes have been initialized properly before
+	# accessing methods and variables
 	await owner.ready
 	
 	# Store the owner for use later
@@ -74,6 +73,6 @@ func _ready():
 		# Convert to global coordinates
 		for i in _Path.size():
 			_Path[i] = _Bat.to_global(_Path[i])
-
+	pass
 #endregion
 
