@@ -36,7 +36,7 @@ func _build() -> void:
 		interface.bottom_button_output.button_pressed = false
 	)
 	
-	#Steps0000Intro()
+	Steps0000Intro()
 	Steps0100FirstLookBatScene()
 	#...
 	Steps9999Conclusion()
@@ -72,7 +72,7 @@ func Steps0000Intro() -> void:
 	complete_step()
 	
 	# 0030: Notice the Bats
-	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.CENTER)
+	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.BOTTOM_RIGHT)
 	bubble_set_avatar_at(Bubble.AvatarAt.CENTER)
 	bubble_set_title("Notice the Bats?")
 	bubble_add_text(
@@ -82,12 +82,11 @@ func Steps0000Intro() -> void:
 		"<INSERT LOOPING VIDEO OF BATS HERE>"
 		])
 	complete_step()
-	
-	pass
 
 
 func Steps0100FirstLookBatScene() -> void:
 	# 0100: Introduction
+	context_set_3d()
 	scene_open(ProjectSettings.get_setting("application/run/main_scene"))
 	highlight_controls([interface.scene_dock], true)
 	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.CENTER_LEFT)
@@ -99,7 +98,7 @@ func Steps0100FirstLookBatScene() -> void:
 	complete_step()
 	
 	# 0110: Navigate to the Bat Scene
-	highlight_scene_nodes([
+	highlight_scene_nodes_by_path([
 		"Game/Enemies",
 		"Game/Enemies/Bat0",
 		"Game/Enemies/Bat1",
@@ -130,13 +129,15 @@ func Steps0100FirstLookBatScene() -> void:
 	context_set_3d()
 	canvas_item_editor_center_at(Vector2.ZERO)
 	canvas_item_editor_zoom_reset()
-	highlight_controls([interface.scene_dock, interface.canvas_item_editor])
-	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.BOTTOM_RIGHT)
+	highlight_controls([interface.canvas_item_editor])
+	bubble_move_and_anchor(interface.inspector_dock, Bubble.At.BOTTOM_RIGHT)
 	bubble_set_avatar_at(Bubble.AvatarAt.LEFT)
+	bubble_set_title("How about now?")
 	bubble_add_text([
 		"Look how cute that bat is <3!",
 		])
 	complete_step()
+
 
 func Steps9999Conclusion() -> void:
 	bubble_move_and_anchor(interface.main_screen)

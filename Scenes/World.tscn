@@ -94,9 +94,8 @@ use_collision = true
 size = Vector3(20.7306, 28.2794, 14.86)
 material = ExtResource("2_qetf5")
 
-[node name="Hole2" type="CSGCylinder3D" parent="Cave2"]
-transform = Transform3D(0.732365, -0.680913, -1.59031e-09, 0.680913, 0.732365, 2.89369e-11, 1.14499e-09, -1.10405e-09, 1, -4.82622, 13.6271, 10.6199)
+[node name="Hole2" type="CSGBox3D" parent="Cave2"]
+transform = Transform3D(0.999548, 0.0300849, -3.18245e-08, -0.0300849, 0.999548, 1.37466e-08, 3.22237e-08, -1.2783e-08, 1, -5.63641, 14.3154, 9.93261)
 operation = 2
-radius = 3.5
-height = 8.0
+size = Vector3(8.20605, 0.671314, 4.39865)
 material = ExtResource("2_qetf5")

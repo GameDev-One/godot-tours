@@ -70,7 +70,7 @@ func add_highlight_to_control(control: Control, rect_getter := Callable(), play_
 			var child_rect := Rect2(child.global_position, child.custom_minimum_size)
 			if rect.grow(RECT_GROW * editor_scale).intersects(child_rect):
 				overlaps.push_back(child)
-
+	
 	var highlight := HighlightPackedScene.instantiate()
 	dimmer.add_child(highlight)
 	if play_flash:
