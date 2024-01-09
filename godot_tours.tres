@@ -5,10 +5,10 @@
 
 [sub_resource type="Resource" id="Resource_vrl3d"]
 script = ExtResource("2_wh1da")
-title = "0000: Basic Tour"
+title = "0001: Unstructered AI"
 is_free = true
 is_locked = false
-tour_path = "res://Scripts/Tours/BasicTour.gd"
+tour_path = "res://Scripts/Tours/UnstructeredAI.gd"
 
 [resource]
 script = ExtResource("1_jcgwy")
