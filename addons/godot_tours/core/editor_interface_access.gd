@@ -2,12 +2,6 @@
 ## Extend this script to add support for more areas of the Godot editor or Godot plugins.
 const Utils := preload("utils.gd")
 
-## Keeps track of the pieces of the editor interface we need to access and block or highlight.
-## Used by Overlays to know which controls to block or highlight.
-## Also used by the Bubble to know when and how to move, for example, when resizing a panel in the editor.
-var controls_maps: Array[Dictionary] = []
-var extra_draw: Array[Control] = []
-
 ## This is the base control of the Godot editor, the parent to all UI nodes in the entire
 ## application.
 var base_control: Control = null
@@ -76,6 +70,18 @@ var script_editor_items_panel: VBoxContainer = null
 var script_editor_functions_panel: VBoxContainer = null
 var script_editor_code_panel: VBoxContainer = null
 var asset_lib: PanelContainer = null
+
+# Snap Dialog, AKA Configure Snap window
+var snap_options_window: ConfirmationDialog = null
+var snap_options_cancel_button: Button = null
+var snap_options_ok_button: Button = null
+var snap_options: VBoxContainer = null
+var snap_options_grid_offset_controls: Array[Control] = []
+var snap_options_grid_step_controls: Array[Control] = []
+var snap_options_primary_line_controls: Array[Control] = []
+var snap_options_rotation_offset_controls: Array[Control] = []
+var snap_options_rotation_step_controls: Array[Control] = []
+var snap_options_scale_step_controls: Array[Control] = []
 
 # Left Upper
 var scene_tabs: TabBar = null
@@ -147,8 +153,6 @@ var bottom_button_debugger: Button = null
 var bottom_button_tilemap: Button = null
 var bottom_button_tileset: Button = null
 
-
-var tabs: Array[TabBar] = []
 var tabs_text := {}
 
 
@@ -185,11 +189,15 @@ func _init() -> void:
 	# Main Screen
 	main_screen = EditorInterface.get_editor_main_screen()
 	main_screen_tabs = Utils.find_child(main_screen.get_parent().get_parent(), "TabBar")
-	distraction_free_button = main_screen_tabs.get_parent().find_children("", "Button", true, false).back()
+	distraction_free_button = (
+		main_screen_tabs.get_parent().find_children("", "Button", true, false).back()
+	)
 	canvas_item_editor = Utils.find_child(main_screen, "CanvasItemEditor")
 	canvas_item_editor_viewport = Utils.find_child(canvas_item_editor, "CanvasItemEditorViewport")
 	canvas_item_editor_toolbar = canvas_item_editor.get_child(0).get_child(0).get_child(0)
-	var canvas_item_editor_toolbar_buttons := canvas_item_editor_toolbar.find_children("", "Button", false, false)
+	var canvas_item_editor_toolbar_buttons := canvas_item_editor_toolbar.find_children(
+		"", "Button", false, false
+	)
 	canvas_item_editor_toolbar_select_button = canvas_item_editor_toolbar_buttons[0]
 	canvas_item_editor_toolbar_move_button = canvas_item_editor_toolbar_buttons[1]
 	canvas_item_editor_toolbar_rotate_button = canvas_item_editor_toolbar_buttons[2]
@@ -210,9 +218,24 @@ func _init() -> void:
 	canvas_item_editor_zoom_button_reset = canvas_item_editor_zoom_widget.get_child(1)
 	canvas_item_editor_zoom_button_increase = canvas_item_editor_zoom_widget.get_child(2)
 
+	snap_options_window = Utils.find_child(base_control, "SnapDialog")
+	snap_options = snap_options_window.get_child(0)
+	snap_options_cancel_button = snap_options_window.get_cancel_button()
+	snap_options_ok_button = snap_options_window.get_ok_button()
+	var snap_options_controls: Array[Node] = snap_options.get_child(0).get_children()
+	snap_options_grid_offset_controls.assign(snap_options_controls.slice(0, 3))
+	snap_options_grid_step_controls.assign(snap_options_controls.slice(3, 6))
+	snap_options_primary_line_controls.assign(snap_options_controls.slice(6, 9))
+	snap_options_controls = snap_options.get_child(2).get_children()
+	snap_options_rotation_offset_controls.assign(snap_options_controls.slice(0, 2))
+	snap_options_rotation_step_controls.assign(snap_options_controls.slice(2, 4))
+	snap_options_scale_step_controls.assign(snap_options.get_child(4).get_children())
+
 	spatial_editor = Utils.find_child(main_screen, "Node3DEditor")
 	spatial_editor_cameras.assign(spatial_editor.find_children("", "Camera3D", true, false))
-	spatial_editor_surface = Utils.find_child(spatial_editor, "ViewportNavigationControl").get_parent()
+	spatial_editor_surface = (
+		Utils.find_child(spatial_editor, "ViewportNavigationControl").get_parent()
+	)
 	script_editor = EditorInterface.get_script_editor()
 	script_editor_window_wrapper = script_editor.get_parent()
 	script_editor_code_panel = script_editor.get_child(0).get_child(1).get_child(1)
@@ -227,10 +250,13 @@ func _init() -> void:
 	scene_dock_button_add = scene_dock.get_child(0).get_child(0)
 	node_create_window = Utils.find_child(scene_dock, "CreateDialog")
 	node_create_panel = Utils.find_child(node_create_window, "HSplitContainer")
-	var node_create_dialog_vboxcontainer: VBoxContainer = node_create_window.get_child(3,
-true).get_child(1, true)
+	var node_create_dialog_vboxcontainer: VBoxContainer = (
+		node_create_window.get_child(3, true).get_child(1, true)
+	)
 	node_create_dialog_node_tree = Utils.find_child(node_create_dialog_vboxcontainer, "Tree")
-	node_create_dialog_search_bar = node_create_dialog_vboxcontainer.get_child(1, true).get_child(0, true).get_child(0, true)
+	node_create_dialog_search_bar = (
+		node_create_dialog_vboxcontainer.get_child(1, true).get_child(0, true).get_child(0, true)
+	)
 	node_create_dialog_button_create = node_create_window.get_child(2, true).get_child(3, true)
 	node_create_dialog_button_cancel = node_create_window.get_child(2, true).get_child(1, true)
 	scene_tabs = Utils.find_child(scene_dock.get_parent(), "TabBar")
@@ -257,7 +283,9 @@ true).get_child(1, true)
 	signals_dialog_window = Utils.find_child(node_dock_signals_editor, "ConnectDialog")
 	signals_dialog = signals_dialog_window.get_child(0)
 	signals_dialog_tree = Utils.find_child(signals_dialog, "Tree")
-	var signals_dialog_line_edits := signals_dialog.get_child(0).find_children("", "LineEdit", true, false)
+	var signals_dialog_line_edits := signals_dialog.get_child(0).find_children(
+		"", "LineEdit", true, false
+	)
 	signals_dialog_signal_line_edit = signals_dialog_line_edits[0]
 	signals_dialog_method_line_edit = signals_dialog_line_edits[-1]
 	signals_dialog_cancel_button = signals_dialog_window.get_cancel_button()
@@ -272,27 +300,51 @@ true).get_child(1, true)
 	bottom_panels_container = logger.get_parent().get_parent()
 	var bottom_panels_vboxcontainer: VBoxContainer = logger.get_parent()
 
-	debugger  = bottom_panels_vboxcontainer.find_children("*", "EditorDebuggerNode", false, false).back()
-	find_in_files = bottom_panels_vboxcontainer.find_children("*", "FindInFilesPanel", false, false).back()
-	audio_buses  = bottom_panels_vboxcontainer.find_children("*", "EditorAudioBuses", false, false).back()
-	animation_player = bottom_panels_vboxcontainer.find_children("*", "AnimationPlayerEditor", false, false).back()
+	debugger = (
+		bottom_panels_vboxcontainer.find_children("*", "EditorDebuggerNode", false, false).back()
+	)
+	find_in_files = (
+		bottom_panels_vboxcontainer.find_children("*", "FindInFilesPanel", false, false).back()
+	)
+	audio_buses = (
+		bottom_panels_vboxcontainer.find_children("*", "EditorAudioBuses", false, false).back()
+	)
+	animation_player = (
+		bottom_panels_vboxcontainer.find_children("*", "AnimationPlayerEditor", false, false).back()
+	)
 	shader = bottom_panels_vboxcontainer.find_children("*", "WindowWrapper", false, false).back()
-	bottom_buttons = Utils.find_child(bottom_panels_vboxcontainer, "EditorToaster").get_parent().find_children("", "HBoxContainer", false, false).front()
+	bottom_buttons = (
+		Utils
+		. find_child(bottom_panels_vboxcontainer, "EditorToaster")
+		. get_parent()
+		. find_children("", "HBoxContainer", false, false)
+		. front()
+	)
 
 	tilemap = bottom_panels_vboxcontainer.find_children("*", "TileMapEditor", false, false).back()
-	var tilemap_flow_container: HFlowContainer = tilemap.find_children("", "HFlowContainer", false, false).back()
+	var tilemap_flow_container: HFlowContainer = (
+		tilemap.find_children("", "HFlowContainer", false, false).back()
+	)
 
 	tilemap_tabs = tilemap_flow_container.get_child(0)
 
 	tilemap_tiles_panel = tilemap.get_node("Tiles")
-	var tilemap_tiles_hsplitcontainer: HSplitContainer = Utils.get_child_by_type(tilemap_tiles_panel, "HSplitContainer")
-	tilemap_tiles_atlas_view = Utils.get_child_by_type(tilemap_tiles_hsplitcontainer, "TileAtlasView")
+	var tilemap_tiles_hsplitcontainer: HSplitContainer = Utils.get_child_by_type(
+		tilemap_tiles_panel, "HSplitContainer"
+	)
+	tilemap_tiles_atlas_view = Utils.get_child_by_type(
+		tilemap_tiles_hsplitcontainer, "TileAtlasView"
+	)
 	tilemap_tiles_toolbar = tilemap_flow_container.get_child(1)
 
 	tilemap_terrains_panel = tilemap.get_node("Terrains")
 	var tilemap_terrains_hsplitcontainer: HSplitContainer = tilemap_terrains_panel.get_child(0)
-	tilemap_terrains_tree = tilemap_terrains_hsplitcontainer.find_children("*", "Tree", false, false).back()
-	tilemap_terrains_tiles = tilemap_terrains_hsplitcontainer.find_children("*", "ItemList", false, false).back()
+	tilemap_terrains_tree = (
+		tilemap_terrains_hsplitcontainer.find_children("*", "Tree", false, false).back()
+	)
+	tilemap_terrains_tiles = (
+		tilemap_terrains_hsplitcontainer.find_children("*", "ItemList", false, false).back()
+	)
 	tilemap_terrains_toolbar = tilemap_flow_container.get_child(2)
 	tilemap_terrains_tool_draw = tilemap_terrains_toolbar.get_child(0).get_child(0)
 
@@ -307,64 +359,12 @@ true).get_child(1, true)
 	for window in [signals_dialog_window, node_create_window]:
 		window_toggle_tour_mode(window, true)
 
-	tabs = [main_screen_tabs, scene_tabs, filesystem_tabs, inspector_tabs]
-	controls_maps = [
-		{
-			controls = [main_screen_tabs,
-						canvas_item_editor,
-						spatial_editor,
-						script_editor_top_bar,
-						script_editor_items_panel,
-						script_editor_functions_panel,
-						script_editor_code_panel,
-						asset_lib],
-			tabs = main_screen_tabs,
-		},
-		{
-			controls = [scene_tabs, scene_dock, import_dock],
-			tabs = scene_dock.get_parent(),
-		},
-		{
-			controls = [filesystem_tabs, filesystem_dock],
-			tabs = filesystem_dock.get_parent(),
-		},
-		{
-			controls = [inspector_tabs,
-						inspector_dock,
-						node_dock_buttons_box,
-						node_dock_signals_editor,
-						node_dock_groups_editor,
-						history_dock],
-			tabs = inspector_dock.get_parent(),
-		},
-		{
-			controls = [menu_bar,
-						context_switcher,
-						run_bar,
-						rendering_options,
-						logger,
-						debugger,
-						find_in_files,
-						audio_buses,
-						animation_player,
-						shader,
-						bottom_buttons,
-						signals_dialog,
-						signals_dialog_cancel_button,
-						signals_dialog_ok_button,
-						tileset,
-						tilemap,
-						node_create_panel,],
-			tabs = null,
-		},
-	]
 	tabs_text = {
 		scene_tabs: "Scene Tree",
 		inspector_tabs: "Inspector",
 		main_screen_tabs: "Main Screen",
 		filesystem_tabs: "FileSystem",
 	}
-	extra_draw = [scene_tree, filesystem_tree, node_dock_signals_tree]
 
 
 func clean_up() -> void:
@@ -414,7 +414,6 @@ func is_in_scripting_context() -> bool:
 
 func _get_bottom_button(buttons: Array[Node], text: String) -> Button:
 	for button in buttons:
-		if button.get("text") == text:
+		if button.get("text").begins_with(text):
 			return button
 	return null
-
