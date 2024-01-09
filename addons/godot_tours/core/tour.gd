@@ -62,7 +62,6 @@ var _steps: Array[Array] = []
 var _step_commands: Array[Command] = []
 
 
-
 ## Overlays added to the current scene to highlight a specific area.
 ## We don't set their owner property so they stay hidden from the scene tree, but still show in the viewport.
 ## They are automatically cleared on new _steps.
@@ -107,11 +106,6 @@ func _init(interface: EditorInterfaceAccess, overlays: Overlays,  translation_se
 	interface.restore_default_layout()
 	_build()
 	bubble.set_step_count(_steps.size())
-	bubble.set_custom_minimum_size(bubble.custom_minimum_size * EditorInterface.get_editor_scale())
-
-	overlays.toggle_overlays(true)
-	overlays.toggle_dimmers(true)
-
 	step_changed.connect(bubble.update_step_count_display)
 
 
@@ -123,11 +117,11 @@ func _build() -> void:
 
 
 func clean_up() -> void:
-	bubble.clean_up()
-	bubble.queue_free()
 	_clear_game_world_overlays()
 	clear_mouse()
 	log.clean_up()
+	if is_instance_valid(bubble):
+		bubble.queue_free()
 
 
 func set_index(value: int) -> void:
@@ -167,9 +161,10 @@ func next() -> void:
 func complete_step() -> void:
 	var step_start: Array[Command] = [
 		Command.new(bubble.clear),
-		Command.new(overlays.clear),
+		Command.new(overlays.clean_up),
+		Command.new(overlays.ensure_get_dimmer_for.bind(interface.base_control)),
 		Command.new(clear_mouse),
-		Command.new(_clear_game_world_overlays)
+		Command.new(_clear_game_world_overlays),
 	]
 	_step_commands.push_back(Command.new(play_mouse))
 	_steps.push_back(step_start + _step_commands)
@@ -386,7 +381,7 @@ func bubble_add_task_toggle_button(button: Button, is_toggled := true, descripti
 	bubble_add_task(
 		description,
 		1,
-		func(task: Task) -> int: return 1 if button.button_pressed == is_toggled else 0,
+		func(_task: Task) -> int: return 1 if button.button_pressed == is_toggled else 0,
 		noop_error_predicate,
 	)
 
@@ -397,7 +392,7 @@ func bubble_add_task_set_tab_to_index(tabs: TabBar, index: int, description := "
 		return
 	var which_tabs: String = "[b]%s[/b] tabs" % interface.tabs_text.get(tabs, "")
 	description = gtr("Set %s to tab with index [b]%d[/b].") % [which_tabs, index] if description.is_empty() else description
-	queue_command(bubble.add_task, [description, 1, func(task: Task) -> int: return 1 if index == tabs.current_tab else 0, noop_error_predicate])
+	queue_command(bubble.add_task, [description, 1, func(_task: Task) -> int: return 1 if index == tabs.current_tab else 0, noop_error_predicate])
 
 
 func bubble_add_task_set_tab_to_title(tabs: TabBar, title: String, description := "") -> void:
@@ -415,12 +410,34 @@ func bubble_add_task_select_node(node_name: String) -> void:
 	bubble_add_task(
 		"Select the [b]" + node_name + "[/b] node in the [b]Scene Dock[/b].",
 		1,
-		func task_select_node(task: Task) -> int:
+		func task_select_node(_task: Task) -> int:
 			var scene_root: Node = EditorInterface.get_edited_scene_root()
 			var target_node: Node = scene_root.find_child(node_name)
 			var selected_nodes := EditorInterface.get_selection().get_selected_nodes()
 			return 1 if selected_nodes.size() == 1 and selected_nodes.front() == target_node else 0,
 	)
+
+
+func bubble_add_task_set_ranges(ranges: Dictionary, label_text: String, description := "") -> void:
+	var controls := ranges.keys()
+	if controls.any(func(n: Node) -> bool: return not n is Range):
+		var classes := controls.map(func(x: Node) -> String: return x.get_class())
+		warn("Not all 'ranges' are of type 'Range' [b]'[%s]'[/b]" % [classes], "bubble_add_task_set_range_value")
+	else:
+		if description.is_empty():
+			description = gtr(
+				"""Set [b]%s[/b] to [code]%s[/code]"""
+				% [
+					label_text,
+					"x".join(ranges.keys().map(func(r: Range) -> String: return str(snappedf(ranges[r], r.step)))),
+				]
+			)
+		bubble_add_task(
+			description,
+			1,
+			func set_ranges(_task: Task) -> int:
+				return 1 if ranges.keys().all(func(r: Range) -> bool: return r.value == ranges[r]) else 0,
+		)
 
 
 func bubble_set_header(text: String) -> void:
@@ -468,13 +485,12 @@ func bubble_set_avatar_surprised() -> void:
 	queue_command(bubble.avatar.set_expression, [bubble.avatar.Expressions.SURPRISED])
 
 
-func highlight_scene_nodes(paths: Array[String], play_flash := true, button_index := -1) -> void:
-	queue_command(overlays.highlight_scene_nodes, [paths, play_flash, button_index])
+func highlight_scene_nodes_by_name(names: Array[String], play_flash := true, button_index := -1) -> void:
+	queue_command(overlays.highlight_scene_nodes_by_name, [names, play_flash, button_index])
 
 
-#TODO: consider if keeping this? You can highlight the inspector dock instead
-func highlight_scene_all_nodes(play_flash := false) -> void:
-	queue_command(overlays.highlight_scene_all_nodes, [play_flash])
+func highlight_scene_nodes_by_path(paths: Array[String], play_flash := true, button_index := -1) -> void:
+	queue_command(overlays.highlight_scene_nodes_by_path, [paths, play_flash, button_index])
 
 
 func highlight_filesystem_paths(paths: Array[String], play_flash := true) -> void:
@@ -509,8 +525,7 @@ func highlight_canvas_item_editor_rect(rect: Rect2, play_flash := false) -> void
 	queue_command(func() -> void:
 		var rect_getter := func() -> Rect2:
 			return EditorInterface.get_edited_scene_root().get_viewport().get_screen_transform() * rect
-		var overlay := overlays.find_overlay_for(interface.canvas_item_editor)
-		overlays.add_highlight_to_overlay(overlay, rect_getter, play_flash),
+		overlays.add_highlight_to_control(interface.canvas_item_editor, rect_getter, play_flash),
 	)
 
 
@@ -530,8 +545,7 @@ func higlight_spatial_editor_camera_region(start: Vector3, end: Vector3, index :
 			var s := camera.unproject_position(start)
 			var e := camera.unproject_position(end)
 			return camera.get_viewport().get_screen_transform() * Rect2(Vector2(min(s.x, e.x), min(s.y, e.y)), (e - s).abs())
-		var overlay := overlays.find_overlay_for(interface.spatial_editor)
-		overlays.add_highlight_to_overlay(overlay, rect_getter, play_flash),
+		overlays.add_highlight_to_control(interface.spatial_editor, rect_getter, play_flash),
 	)
 
 
@@ -580,19 +594,19 @@ func ensure_mouse() -> void:
 		# We don't preload to avoid errors on a project's first import, to distribute the tour to
 		# schools for example.
 		var MousePackedScene := load("res://addons/godot_tours/core/mouse/mouse.tscn")
-		mouse = MousePackedScene.instantiate() as Mouse
+		mouse = MousePackedScene.instantiate()
 		interface.base_control.get_viewport().add_child(mouse)
 
 
 func clear_mouse() -> void:
 	if mouse != null:
-		mouse.free()
+		mouse.queue_free()
 		mouse = null
 
 
 func play_mouse() -> void:
-	if mouse != null:
-		mouse.play()
+	ensure_mouse()
+	mouse.play()
 
 
 func get_scene_node_by_path(path: String) -> Node:
@@ -650,13 +664,6 @@ func get_tree_item_center_by_name(tree: Tree, name: String) -> Vector2:
 	return result
 
 
-func get_highlight_center_by_index(control: Control, index := 0) -> Vector2:
-	var highlights := overlays.find_highlights_for(control)
-	if index < 0 or index >= highlights.size():
-		return Vector2.ZERO
-	return highlights[index].get_global_rect().get_center()
-
-
 func node_find_path(node_name: String) -> String:
 	var root_node := EditorInterface.get_edited_scene_root()
 	var found_node := root_node.find_child(node_name)
@@ -678,17 +685,13 @@ func find_tabs_title(tabs: TabBar, title: String) -> int:
 
 ## Toggles the visibility of all the tour-specific nodes: overlays, bubble, and mouse.
 func toggle_visible(is_visible: bool) -> void:
-	for node in [
-		bubble,
-		mouse,
-	]:
+	for node in [bubble, mouse]:
 		if node != null:
 			node.visible = is_visible
-	overlays.toggle_overlays(is_visible)
 	overlays.toggle_dimmers(is_visible)
 
 
-func noop_error_predicate(task: Task) -> bool:
+func noop_error_predicate(_task: Task) -> bool:
 	return false
 
 
