@@ -51,6 +51,7 @@ enum Direction {BACK = -1, NEXT = 1}
 enum CanvasItemEditorZoom {_50, _100, _200}
 
 const EVENTS := {
+	num_1 = preload("events/num_1_input_event_key.tres"),
 	shift_1 = preload("events/shift_1_input_event_key.tres"),
 	_1 = preload("events/1_input_event_key.tres"),
 	_2 = preload("events/2_input_event_key.tres"),

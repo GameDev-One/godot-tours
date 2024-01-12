@@ -8,11 +8,6 @@
 radius = 0.75
 
 [sub_resource type="Curve3D" id="Curve3D_045sb"]
-_data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, -2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0),
-"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0)
-}
-point_count = 6
 
 [sub_resource type="Curve3D" id="Curve3D_snyi7"]
 _data = {

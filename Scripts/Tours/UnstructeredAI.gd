@@ -36,15 +36,15 @@ func _build() -> void:
 		interface.bottom_button_output.button_pressed = false
 	)
 	
-	Steps0000Intro()
-	Steps0100FirstLookBatScene()
-	#...
-	Steps9999Conclusion()
+	_Steps0000Intro()
+	_Steps0100FirstLookBatScene()
+	_Steps0200StarPathForBat()
+	_Steps9999Conclusion()
 	
 
-func Steps0000Intro() -> void:
+func _Steps0000Intro() -> void:
 	# 0010: Introduction
-	context_set_2d()
+	context_set_3d()
 	scene_open(ProjectSettings.get_setting("application/run/main_scene"))
 	bubble_move_and_anchor(interface.base_control, Bubble.At.CENTER)
 	bubble_set_avatar_at(Bubble.AvatarAt.CENTER)
@@ -72,7 +72,7 @@ func Steps0000Intro() -> void:
 	complete_step()
 	
 	# 0030: Notice the Bats
-	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.BOTTOM_RIGHT)
+	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.CENTER)
 	bubble_set_avatar_at(Bubble.AvatarAt.CENTER)
 	bubble_set_title("Notice the Bats?")
 	bubble_add_text(
@@ -84,7 +84,7 @@ func Steps0000Intro() -> void:
 	complete_step()
 
 
-func Steps0100FirstLookBatScene() -> void:
+func _Steps0100FirstLookBatScene() -> void:
 	# 0100: Introduction
 	context_set_3d()
 	scene_open(ProjectSettings.get_setting("application/run/main_scene"))
@@ -107,12 +107,11 @@ func Steps0100FirstLookBatScene() -> void:
 		"Game/Enemies/Bat4",
 		])
 	bubble_add_text([
-		"All of the Bats are located under the Enemies Node as children",
 		"Uncollapse the Enemies Node to reveal all of the Bats in the Scene Dock.",
 		"Then select the [code]Open in Editor Icon[/code] next to 'Bat0' to open the Bat Scene."
 	])
 	bubble_add_task(
-		("Go to the Bat Scene"),
+		"Go to the Bat Scene",
 		1,
 		func task_open_bat_scene(task: Task) -> int:
 			var scene_root: Node = EditorInterface.get_edited_scene_root()
@@ -120,26 +119,265 @@ func Steps0100FirstLookBatScene() -> void:
 				return 0
 			return 1 if scene_root.name == "Bat" else 0
 	)
-	queue_command(func debugger_close():
-		interface.bottom_button_debugger.button_pressed = false
+	highlight_controls([interface.scene_dock], true)
+	queue_command(func bottom_output_close():
+		interface.bottom_button_output.button_pressed = false
 	)
+	queue_command(func show_nodes():
+		for node in EditorInterface.get_edited_scene_root().get_children():
+			if node.has_method("show"):
+				node.show()
+		)
 	complete_step()
 	
 	# 0120: Look at the Bat
 	context_set_3d()
-	canvas_item_editor_center_at(Vector2.ZERO)
-	canvas_item_editor_zoom_reset()
-	highlight_controls([interface.canvas_item_editor])
-	bubble_move_and_anchor(interface.inspector_dock, Bubble.At.BOTTOM_RIGHT)
+	
+	highlight_controls([interface.spatial_editor])
+	bubble_move_and_anchor(interface.spatial_editor, Bubble.At.BOTTOM_RIGHT)
 	bubble_set_avatar_at(Bubble.AvatarAt.LEFT)
-	bubble_set_title("How about now?")
+	bubble_set_title("Look how cute that bat be!")
 	bubble_add_text([
-		"Look how cute that bat is <3!",
+		"The bat is a creature with a straightforward mindset, comprehending only how to navigate its existence within the game world.",
+		"This simplicity makes it an ideal candidate for our [b]Unstructured AI[/b], as the bat can remain focused solely on its behavioral aspects without the need to consider broader aspects of the game environment.",
+		"Before delving into the implementation of the AI, let's break down the components of the Bat Scene."
 		])
+	queue_command(func spatial_editor_reset_camera():
+		interface.spatial_editor_surface.gui_input.emit(EVENTS.f)
+		interface.spatial_editor_surface.gui_input.emit(EVENTS.num_1)
+		interface.spatial_editor_cameras[0].set_orthogonal(7, interface.spatial_editor_cameras[0].near, interface.spatial_editor_cameras[0].far)
+		)
+	complete_step()
+	
+	# 0130: Scene Breakdown: Bat
+	highlight_controls([interface.spatial_editor])
+	highlight_scene_nodes_by_path(["Bat"])
+	bubble_set_title("Scene Breakdown: Bat")
+	bubble_add_text([
+		"Bat is a CharacterBody3D node that will allow the Bat to float in 3D space while giving us control over how it moves using Godot's Physics system."
+		])
+	queue_command(func show_nodes():
+		for node in EditorInterface.get_edited_scene_root().get_children():
+			if node.has_method("show"):
+				node.show()
+		)
+	complete_step()
+	
+	# 0131: Scene Breakdown: Description
+	highlight_controls([interface.spatial_editor])
+	highlight_scene_nodes_by_path(["Bat/Description"])
+	bubble_set_title("Scene Breakdown: Description")
+	bubble_add_text([
+		"Description is a Label3D node that shows useful information about the Bat to the player in-game."
+		])
+	queue_command(func hide_nodes():
+		for node in EditorInterface.get_edited_scene_root().get_children():
+			if node.has_method("hide"):
+				node.hide()
+		EditorInterface.get_edited_scene_root().get_node("Description").show()
+		)
+	complete_step()
+	
+	# 0132: Scene Breakdown: AI
+	highlight_controls([interface.spatial_editor])
+	highlight_scene_nodes_by_path(["Bat/AI"])
+	bubble_set_title("Scene Breakdown: AI")
+	bubble_add_text([
+		"AI is a Node to control all other sibling Nodes for the Unstructured AI.",
+		"We will be adding a script to this node later."
+		])
+	queue_command(func hide_nodes():
+		for node in EditorInterface.get_edited_scene_root().get_children():
+			if node.has_method("hide"):
+				node.hide()
+		)
+	complete_step()
+	
+	# 0133: Scene Breakdown: Model
+	highlight_controls([interface.spatial_editor])
+	highlight_scene_nodes_by_path(["Bat/Model"])
+	bubble_set_title("Scene Breakdown: Model")
+	bubble_add_text([
+		"Model is a Node3D that contains the 3D Model and Animations of the Bat.",
+		])
+	queue_command(func hide_nodes():
+		for node in EditorInterface.get_edited_scene_root().get_children():
+			if node.has_method("hide"):
+				node.hide()
+		EditorInterface.get_edited_scene_root().get_node("Model").show()
+		)
+	complete_step()
+	
+	# 0134: Scene Breakdown: Collision
+	highlight_controls([interface.spatial_editor])
+	highlight_scene_nodes_by_path(["Bat/Collision"])
+	bubble_set_title("Scene Breakdown: Collision")
+	bubble_add_text([
+		"Collision is a CollisionShape3D node that allows the Bat to interact with the 3D World.",
+		])
+	queue_command(func hide_nodes():
+		for node in EditorInterface.get_edited_scene_root().get_children():
+			if node.has_method("hide"):
+				node.hide()
+		EditorInterface.get_edited_scene_root().get_node("Collision").show()
+		)
+	complete_step()
+	
+	# 0135: Scene Breakdown: Path
+	highlight_controls([interface.spatial_editor])
+	highlight_scene_nodes_by_path(["Bat/StarPath", "Bat/OvalPath"])
+	bubble_set_title("Scene Breakdown: Paths")
+	bubble_add_text([
+		"Additionally, 'StarPath' and 'OvalPath' are Path3D nodes employed to define predetermined routes for the bat to traverse.",
+		])
+	queue_command(func hide_nodes():
+		for node in EditorInterface.get_edited_scene_root().get_children():
+			if node.has_method("hide"):
+				node.hide()
+		EditorInterface.get_edited_scene_root().get_node("StarPath").show()
+		EditorInterface.get_edited_scene_root().get_node("OvalPath").show()
+		)
+	complete_step()
+	
+	# 0140: AI and Paths
+	highlight_controls([interface.spatial_editor])
+	highlight_scene_nodes_by_path(["Bat/AI","Bat/StarPath", "Bat/OvalPath"])
+	bubble_set_title("Scene Breakdown: Unstructured AI and Paths")
+	bubble_add_text([
+		"Through a combination of the AI and Path nodes, we will to design the Unstructured AI that the bat will follow.",
+		])
+	queue_command(func show_nodes():
+		for node in EditorInterface.get_edited_scene_root().get_children():
+			if node.has_method("show"):
+				node.show()
+		)
 	complete_step()
 
 
-func Steps9999Conclusion() -> void:
+func _Steps0200StarPathForBat():
+	
+	#get_all_children(interface.inspector_editor)
+	# 0200: Design StarPath
+	highlight_controls([interface.inspector_editor])
+	highlight_scene_nodes_by_path(["Bat/StarPath"])
+	bubble_set_title("Design StarPath")
+	bubble_add_text([
+		"Click on the StarPath and lets take a look at its components in the Inspector dock",
+		])
+	bubble_add_task(
+		"Select StarPath Node.",
+		1,
+		func select_starpath_node(task: Task) -> int:
+			var selected_node = EditorInterface.get_selection().get_selected_nodes()[0]
+			return 1 if selected_node.name == "StarPath" else 0
+	)
+	complete_step()
+	
+	# 0210: Curve3D Resource
+	highlight_inspector_properties(["curve"])
+	highlight_scene_nodes_by_path(["Bat/StarPath"])
+	bubble_set_title("Curve3D Resource")
+	bubble_add_text([
+		"The Curve3D is a resource that describes a Bézier curve in 3D space.",
+		"We will use it to give shape to our path by providing it points to follow.",
+		])
+	bubble_add_task(
+		"Select the Curve3D resource",
+		1,
+		func open_curve3d_resource(task: Task) -> int:
+			var button = find_editor_inspector_property_button("curve")[0]
+			if button == null:
+				return 0
+			return 1 if button.button_pressed == true else 0
+	)
+	complete_step()
+	
+	# 0220: Add a Point to Curve3D
+	highlight_inspector_properties(["curve"])
+	bubble_add_text([
+		"Once we've defined our points the Curve3D resource will pre-calculate additonal points to create the Beizer curve.",
+		"This is extrememly useful when our path needs to be curved and we will dig into that later in this tutorial.",
+		"[indent][b]1. Uncollaspe Points and Select Add Element to add a point.[/b][/indent]",
+	])
+	bubble_add_task(
+		"Enter [code](-2, 0, 0)[/code] for the Position.",
+		1,
+		func add_point_to_starpath_node(task: Task) -> int:
+			var selected_node = EditorInterface.get_selection().get_selected_nodes()[0].curve
+			return 1 if selected_node.get("point_0/position") == Vector3(-2, 0, 0) else 0
+	)
+	complete_step()
+	
+	# 0230: Notice path being formed in the Spatial Editor
+	highlight_controls([interface.spatial_editor])
+	bubble_move_and_anchor(interface.spatial_editor, bubble.At.BOTTOM_RIGHT)
+	bubble_add_text([
+		"As we add more Points to StarPath we should see the path being generated in the Spatial Editor."
+	])
+	complete_step()
+	
+	# 0240: Add Remaining Points
+	highlight_inspector_properties(["curve"])
+	bubble_add_text([
+		" Add Elements for these points to the Curve3D:"
+	])
+	bubble_add_task(
+		"Add Point (0,3,0)",
+		1,
+		func add_remaining_points_to_curve3d(task: Task) -> int:
+			var selected_node = EditorInterface.get_selection().get_selected_nodes()[0].curve
+			return 1 if selected_node.get("point_1/position") == Vector3(0, 3, 0) else 0
+	)
+	bubble_add_task(
+		"Add Point (2,0,0)",
+		1,
+		func add_remaining_points_to_curve3d(task: Task) -> int:
+			var selected_node = EditorInterface.get_selection().get_selected_nodes()[0].curve
+			return 1 if selected_node.get("point_2/position") == Vector3(2, 0, 0) else 0
+	)
+	bubble_add_task(
+		"Add Point (-2,2,0)",
+		1,
+		func add_remaining_points_to_curve3d(task: Task) -> int:
+			var selected_node = EditorInterface.get_selection().get_selected_nodes()[0].curve
+			return 1 if selected_node.get("point_3/position") == Vector3(-2, 2, 0) else 0
+	)
+	bubble_add_task(
+		"Add Point (2,2,0)",
+		1,
+		func add_remaining_points_to_curve3d(task: Task) -> int:
+			var selected_node = EditorInterface.get_selection().get_selected_nodes()[0].curve
+			return 1 if selected_node.get("point_4/position") == Vector3(2, 2, 0) else 0
+	)
+	bubble_add_task(
+		"Add Point (-2,0,0)",
+		1,
+		func add_remaining_points_to_curve3d(task: Task) -> int:
+			var selected_node = EditorInterface.get_selection().get_selected_nodes()[0].curve
+			return 1 if selected_node.get("point_5/position") == Vector3(-2, 0, 0) else 0
+	)
+	complete_step()
+	
+	
+	# 0230: Notice path being formed in the Spatial Editor
+	highlight_controls([interface.spatial_editor])
+	bubble_move_and_anchor(interface.spatial_editor, bubble.At.BOTTOM_RIGHT)
+	bubble_set_title("STAR PATH CREATED!")
+	bubble_add_text([
+		"Well done! We've successfuly designed our first Path3D.",
+		"Now we can add the code to the AI Node to have the Bat follow this path."
+	])
+	queue_command(func spatial_editor_reset_camera():
+		interface.spatial_editor_surface.gui_input.emit(EVENTS.f)
+		interface.spatial_editor_surface.gui_input.emit(EVENTS.num_1)
+		interface.spatial_editor_cameras[0].set_orthogonal(7, interface.spatial_editor_cameras[0].near, interface.spatial_editor_cameras[0].far)
+		)
+	complete_step()
+	
+	pass
+
+
+func _Steps9999Conclusion() -> void:
 	bubble_move_and_anchor(interface.main_screen)
 	bubble_set_avatar_at(Bubble.AvatarAt.CENTER)
 	bubble_set_avatar_happy()
@@ -161,5 +399,21 @@ func Steps9999Conclusion() -> void:
 	])
 	complete_step()
 
-#endregion
+func find_editor_inspector_property_button(name: String) -> Array[Node]:
+	var b = []
+	for child in interface.inspector_editor.find_children("", "EditorProperty", true, false):
+		if child.label == name.capitalize():
+			b = child.find_children("", "Button", true, false)
+	if b.is_empty():
+		print("Could not find Editor Propery: " + name)
+	return b
 
+func get_all_children(node: Node, level: int = 0):
+	var _level: int = level # retains local level property
+	for N in node.get_children():
+		print(".".repeat(_level) + N.name + " | " + N.get_class())
+		if N is EditorProperty:
+			print(".".repeat(_level) + "[" + N.label + "]")
+		if N.get_child_count() > 0:
+			get_all_children(N, _level + 1)
+#endregion
