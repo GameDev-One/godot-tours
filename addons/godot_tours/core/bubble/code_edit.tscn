@@ -1,4 +1,6 @@
-[gd_scene load_steps=2 format=3 uid="uid://8fblvvdp7jpo"]
+[gd_scene load_steps=3 format=3 uid="uid://8fblvvdp7jpo"]
+
+[ext_resource type="Texture2D" uid="uid://chnp7m1ayvn7g" path="res://addons/godot_tours/core/bubble/assets/action_copy.svg" id="1_14f6m"]
 
 [sub_resource type="CodeHighlighter" id="CodeHighlighter_y4s8f"]
 number_color = Color(1, 0.835294, 0, 1)
@@ -15,6 +17,35 @@ grow_vertical = 2
 editable = false
 virtual_keyboard_enabled = false
 middle_mouse_paste_enabled = false
-draw_tabs = true
-syntax_highlighter = SubResource("CodeHighlighter_y4s8f")
 scroll_fit_content_height = true
+syntax_highlighter = SubResource("CodeHighlighter_y4s8f")
+draw_tabs = true
+gutters_draw_line_numbers = true
+
+[node name="Copy" type="TextureButton" parent="."]
+self_modulate = Color(1, 1, 1, 0.164706)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -32.0
+offset_top = 5.0
+offset_right = -8.0
+offset_bottom = 34.0
+grow_horizontal = 0
+tooltip_text = "Copy Selection"
+texture_normal = ExtResource("1_14f6m")
+ignore_texture_size = true
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Copy"]
+self_modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -148.0
+offset_right = -37.0
+offset_bottom = 23.0
+grow_horizontal = 0
+text = "CODE COPIED TO CLIPBOARD!"

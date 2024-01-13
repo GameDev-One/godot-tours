@@ -39,6 +39,7 @@ func _build() -> void:
 	_Steps0000Intro()
 	_Steps0100FirstLookBatScene()
 	_Steps0200StarPathForBat()
+	_Steps0300UnstructedAICode()
 	_Steps9999Conclusion()
 	
 
@@ -48,27 +49,40 @@ func _Steps0000Intro() -> void:
 	scene_open(ProjectSettings.get_setting("application/run/main_scene"))
 	bubble_move_and_anchor(interface.base_control, Bubble.At.CENTER)
 	bubble_set_avatar_at(Bubble.AvatarAt.CENTER)
-	bubble_set_title("WELCOME TO LEVEL OF THOUGHT FROM AI BEHAVIORS - UNSTRUCTURED AI - TUTORIAL")
+	bubble_set_title("WELCOME TO UNSTRUCTURED AI TUTORIAL")
 	bubble_add_text([
 		"[center]In this tutorial, you take your first steps into understanding [b]AI Behaviors[/b] using the Godot Game Engine.[/center]",
-		"[center]We'll walk the process of creating your own unstructered AI behaviors that you can use for any future projects.[/center]",
+		"[center]We'll walk the process of creating your [b]Unstructured AI[/b] that you can use for any future projects.[/center]",
 		"[center][b]Let's get started![/b][/center]",
 		])
 	queue_command(bubble.avatar.do_wink)
+	complete_step()
+	
+	# 0011: Disclaimer
+	bubble_move_and_anchor(interface.base_control, Bubble.At.CENTER)
+	bubble_set_avatar_at(Bubble.AvatarAt.CENTER)
+	bubble_set_title("DISCLAIMER")
+	bubble_add_text([
+		"Before we start understand this tutorial is all about diving into the cool stuff in Godot, but we're assuming you already have a bit of a handle on [b]Scenes, Nodes, and GDScript.[/b]",
+		"If those terms sound familiar to you, awesome! You're in the right place.",
+		"But if you're scratching your head and wondering what [b]Scenes, Nodes, and GDScript[/b] are, no worries!",
+		"Taking a few minutes to explore introductory materials provided by the [url=https://docs.godotengine.org/en/stable/getting_started/introduction/key_concepts_overview.html]official Godot documentation[/url] or completing beginner-level tutorials before proceeding with this content will get you up to speed.",
+		"Happy learning, and let's dive in!"
+		])
 	complete_step()
 	
 	# 0020: Look at game you'll make
 	highlight_controls([interface.run_bar_play_button], true)
 	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.TOP_RIGHT)
 	bubble_set_avatar_at(Bubble.AvatarAt.LEFT)
-	bubble_add_task_press_button(interface.run_bar_play_button)
-	bubble_set_title("Try the game")
+	bubble_set_title("TRY THE GAME")
 	bubble_add_text(
 		["When a project is first opened in Godot, we land on the [b]Game Scene[/b]. It is the entry point of a Godot game.",
 		"Click the play icon in the top right of the editor to run the Godot project.",
 		"Take a sometime to get familiar with World inside the game using either the keyboard or joypad controls.",
 		"Once you feel familiarized, press [b]ESC[/b] on your keyboard to stop the game.",
 		])
+	bubble_add_task_press_button(interface.run_bar_play_button)
 	complete_step()
 	
 	# 0030: Notice the Bats
@@ -78,7 +92,7 @@ func _Steps0000Intro() -> void:
 	bubble_add_text(
 		["Great job!",
 		"As you were getting familiar with the game world, did you notice the bats in the cave?",
-		"These bats are going to be the focus of our unstructured AI behaviors to for this tutorial.",
+		"These bats are going to be the focus of our Unstructured AI for this tutorial.",
 		"<INSERT LOOPING VIDEO OF BATS HERE>"
 		])
 	complete_step()
@@ -254,12 +268,11 @@ func _Steps0100FirstLookBatScene() -> void:
 	complete_step()
 
 
-func _Steps0200StarPathForBat():
-	
-	#get_all_children(interface.inspector_editor)
+func _Steps0200StarPathForBat() -> void:
 	# 0200: Design StarPath
 	highlight_controls([interface.inspector_editor])
 	highlight_scene_nodes_by_path(["Bat/StarPath"])
+	bubble_move_and_anchor(interface.spatial_editor, Bubble.At.CENTER)
 	bubble_set_title("Design StarPath")
 	bubble_add_text([
 		"Click on the StarPath and lets take a look at its components in the Inspector dock",
@@ -373,7 +386,68 @@ func _Steps0200StarPathForBat():
 		interface.spatial_editor_cameras[0].set_orthogonal(7, interface.spatial_editor_cameras[0].near, interface.spatial_editor_cameras[0].far)
 		)
 	complete_step()
+	pass
+
+
+func _Steps0300UnstructedAICode() -> void:
+	# 0300: AI Node Introduction
+	highlight_scene_nodes_by_path(["Bat","Bat/AI"])
+	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.TOP_LEFT)
+	bubble_set_avatar_at(Bubble.AvatarAt.CENTER)
+	bubble_set_title("Open the AI script")
+	bubble_add_text([
+		"The seperation of the AI logic from the top-level Node is a common practice in the game industry.",
+		"The Bat Node is responsible for controlling access its internal components for objects OUTSIDE of the Bat Scene.",
+		"While the AI Node will be responsible for any interactions between the components INSIDE the Bat scene.",
+		"See [url=https://wikipedia.org/wiki/Separation_of_concerns#:~:text=In%20computer%20science%2C%20separation%20of,code%20of%20a%20computer%20program]'Deisgn Principle - Separation of Concerns'[/url] for more info."
+	])
+	complete_step()
 	
+	highlight_scene_nodes_by_path(["Bat/AI"])
+	bubble_add_task(
+		"Open the AI script.",
+		1,
+		func(task: Task) -> int:
+			if not interface.is_in_scripting_context():
+				return 0
+			var open_script: String = EditorInterface.get_script_editor().get_current_script().resource_path
+			return 1 if open_script == "res://AI/Unstructered/Bat/AI.gd" else 0
+	)
+	complete_step()
+	
+	# 0310: AI Code Variables
+	highlight_code(25,29)
+	bubble_move_and_anchor(interface.inspector_dock, Bubble.At.BOTTOM_RIGHT)
+	bubble_set_avatar_at(Bubble.AvatarAt.LEFT)
+	bubble_set_title("AI Code Variables")
+	bubble_add_text([
+		"To be able to have the Bat follow the path we are going to need to store:[code][b][ul]
+		A reference to the Bat Node
+		A list of all the positions we want to travel along the path
+		A index variable for accessing the above list[/ul][/b][/code]",
+	])
+	complete_step()
+	
+	# 0320: AI Code 
+	highlight_code(56,61)
+	bubble_move_and_anchor(interface.inspector_dock, Bubble.At.BOTTOM_RIGHT)
+	bubble_set_avatar_at(Bubble.AvatarAt.LEFT)
+	bubble_set_title("AI Code Initialize Variables")
+	bubble_add_text([
+		"Wait for the owner of the scene to be ready before accessing its children. This will guarentee children Nodes have been initialized properly before accessing methods and variables",
+	])
+	bubble_add_code([
+		"await owner.ready",
+		])
+	bubble_add_task(
+		"Copy and Paste Code above to Line 60.",
+		1,
+		func check_line_in_script(task: Task) -> int:
+			var line_number = 60
+			var line = EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1)
+			return 1 if line.contains("await owner.ready") else 0
+	)
+	complete_step()
 	pass
 
 

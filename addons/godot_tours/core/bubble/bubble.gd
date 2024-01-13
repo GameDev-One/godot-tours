@@ -151,8 +151,12 @@ func clear_elements_and_tasks() -> void:
 func add_element(element: Control, data: Variant) -> void:
 	main_v_box_container.visible = true
 	main_v_box_container.add_child(element)
-	if element is RichTextLabel or element is CodeEdit:
+	if element is RichTextLabel:
 		element.text = data
+	elif element is CodeEdit:
+		_add_code_edit_copy_button(element)
+		for line in data:
+			element.text += line
 	elif element is TextureRect:
 		element.texture = data
 	elif element is VideoStreamPlayer:
@@ -306,3 +310,13 @@ func _add_debug_shortcuts() -> void:
 	next_button.shortcut = load("res://addons/godot_tours/core/bubble/shortcut_debug_button_next.tres")
 	back_button.shortcut = load("res://addons/godot_tours/core/bubble/shortcut_debug_button_back.tres")
 	button_close_yes.shortcut = load("res://addons/godot_tours/core/bubble/shortcut_debug_button_close.tres")
+
+func _add_code_edit_copy_button(element: CodeEdit) -> void:
+	element.get_node("Copy").pressed.connect(func():
+		element.get_node("Copy/Label").self_modulate = Color.YELLOW
+		var tween = get_tree().create_tween()
+		tween.tween_property(element.get_node("Copy/Label"),
+			"self_modulate",
+			Color("ffffff00"),
+			0.75)
+		DisplayServer.clipboard_set(element.text))
