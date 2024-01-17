@@ -35,7 +35,7 @@ func play() -> void:
 func add_move_operation(from: Callable, to: Callable) -> void:
 	if first_from.is_null():
 		first_from = from
-	const SPEED := 400
+	const SPEED := 800
 	operations.push_back(func() -> void:
 		tween.tween_method(
 			func(param: float) -> void:

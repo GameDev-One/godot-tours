@@ -9,6 +9,7 @@ extends "res://addons/godot_tours/core/tour.gd"
 #endregion
 
 #region CONSTANTS
+const BATWORLDVIEWPNG := preload("res://Scripts/Tours/Assets/BatWorldView.png")
 #endregion
 
 #region EXPORT VARS
@@ -36,10 +37,11 @@ func _build() -> void:
 		interface.bottom_button_output.button_pressed = false
 	)
 	
-	_Steps0000Intro()
-	_Steps0100FirstLookBatScene()
-	_Steps0200StarPathForBat()
-	_Steps0300UnstructedAICode()
+	#_Steps0000Intro()
+	#_Steps0100FirstLookBatScene()
+	#_Steps0200StarPathForBat()
+	#_Steps0300UnstructedAICode()
+	_Steps0400PlayTheGame()
 	_Steps9999Conclusion()
 	
 
@@ -391,19 +393,10 @@ func _Steps0200StarPathForBat() -> void:
 
 func _Steps0300UnstructedAICode() -> void:
 	# 0300: AI Node Introduction
-	highlight_scene_nodes_by_path(["Bat","Bat/AI"])
+	highlight_scene_nodes_by_path(["Bat/AI"])
 	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.TOP_LEFT)
 	bubble_set_avatar_at(Bubble.AvatarAt.CENTER)
-	bubble_set_title("Open the AI script")
-	bubble_add_text([
-		"The seperation of the AI logic from the top-level Node is a common practice in the game industry.",
-		"The Bat Node is responsible for controlling access its internal components for objects OUTSIDE of the Bat Scene.",
-		"While the AI Node will be responsible for any interactions between the components INSIDE the Bat scene.",
-		"See [url=https://wikipedia.org/wiki/Separation_of_concerns#:~:text=In%20computer%20science%2C%20separation%20of,code%20of%20a%20computer%20program]'Deisgn Principle - Separation of Concerns'[/url] for more info."
-	])
-	complete_step()
-	
-	highlight_scene_nodes_by_path(["Bat/AI"])
+	bubble_set_title("OPEN THE AI SCRIPT")
 	bubble_add_task(
 		"Open the AI script.",
 		1,
@@ -428,13 +421,14 @@ func _Steps0300UnstructedAICode() -> void:
 	])
 	complete_step()
 	
-	# 0320: AI Code 
+	# 0320: AI Code Initialize Variables
 	highlight_code(56,61)
 	bubble_move_and_anchor(interface.inspector_dock, Bubble.At.BOTTOM_RIGHT)
 	bubble_set_avatar_at(Bubble.AvatarAt.LEFT)
 	bubble_set_title("AI Code Initialize Variables")
 	bubble_add_text([
-		"Wait for the owner of the scene to be ready before accessing its children. This will guarentee children Nodes have been initialized properly before accessing methods and variables",
+		"The AI Node should set its variables after all other Nodes in the Scene have had their turn.",
+		"This ensures that the Bat Scene's Nodes have been initialized properly before accessing any methods or variables.",
 	])
 	bubble_add_code([
 		"await owner.ready",
@@ -447,6 +441,289 @@ func _Steps0300UnstructedAICode() -> void:
 			var line = EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1)
 			return 1 if line.contains("await owner.ready") else 0
 	)
+	complete_step()
+	
+	# 0321: AI Code Initialize Variables
+	highlight_code(62,64)
+	bubble_add_text([
+		"Now we can set our variables for the AI starting with the [code]_Bat[/code] variable.",
+	])
+	bubble_add_code([
+		"_Bat = owner",
+		])
+	bubble_add_task(
+		"Copy and Paste Code above to Line 63.",
+		1,
+		func check_line_in_script(task: Task) -> int:
+			var line_number = 63
+			var line = EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1)
+			return 1 if line.contains("_Bat = owner") else 0
+	)
+	complete_step()
+	
+	# 0322: AI Code Initialize Variables
+	highlight_code(65,71)
+	bubble_add_text([
+		"Let's check if the the _Bat has a valid PATH_MODE set before we set the _Path variable.",
+		"The Bat.PATH_MODE is a group of string literals we'll use to determine which path Bat should use at the start of the game.",
+		"More on that later in the tutorial.",
+		"We want _Path to be set to the baked_points from the Curve3D resource in the Path3D Node.",
+		"For this we'll use a combination of the PATH_MODE and 'Path' to get the correct Path3D Node from the Bat Scene.",
+		"Then access the baked_points from that Path3D's curve variable.",
+	])
+	bubble_add_code([
+	"if not _Bat.PATH_MODE == \"None\":
+		# Baked points in local coordinates
+		_Path = _Bat.get_node(_Bat.PATH_MODE + \"Path\").curve.get_baked_points()
+		",
+	])
+	bubble_add_task(
+		"Copy and Paste Code above to Line 69 thru 71.",
+		1,
+		func check_lines_in_script(task: Task) -> int:
+			var start_line: int = 69
+			var end_line: int = 72
+			var lines: Array[String] = []
+			var code: String = "if not _Bat.PATH_MODE == \"None\":
+		# Baked points in local coordinates
+		_Path = _Bat.get_node(_Bat.PATH_MODE + \"Path\").curve.get_baked_points()
+		"
+			for line_number in range(start_line, end_line):
+				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
+			for line_number in range(end_line - start_line):
+				if not lines[line_number].contains(code.get_slice("\n", line_number)):
+					return 0
+			return 1
+	)
+	complete_step()
+	
+	# 0323: AI Code Initialize Variables
+	highlight_code(73,75)
+	bubble_add_text([
+		"All points generated by the Path3D via baked_points come in coordinates local to the Bat Scene and not the Game Scene.",
+		"So we will also convert them to the global world space as well."
+	])
+	bubble_add_code([
+	"# Convert to global coordinates
+		for i in _Path.size():
+			_Path[i] = _Bat.to_global(_Path[i])",
+	])
+	bubble_add_task(
+		"Copy and Paste Code above to Line 73 thru 75.",
+		1,
+		func check_lines_in_script(task: Task) -> int:
+			var start_line: int = 73
+			var end_line: int = 75
+			var lines: Array[String] = []
+			var code: String = "# Convert to global coordinates
+		for i in _Path.size():
+			_Path[i] = _Bat.to_global(_Path[i])"
+			for line_number in range(start_line, end_line):
+				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
+			for line_number in range(end_line - start_line):
+				if not lines[line_number].contains(code.get_slice("\n", line_number)):
+					return 0
+			return 1
+	)
+	complete_step()
+	
+	# 0324: AI Code Movement
+	highlight_code(38,53)
+	bubble_add_text([
+		"To keep the bat's movement in-sync with the FPS, the logic will be located in the _physics_process function.",
+		"We'll again check the PATH_MODE used to exit early if no mode has been set."
+	])
+	bubble_add_code([
+		"# Do nothing if the Path Mode is 'None'
+	if _Bat.PATH_MODE == \"None\":
+		return"
+	])
+	bubble_add_task(
+		"Copy and Paste Code above to Line 39 thru 41.",
+		1,
+		func check_lines_in_script(task: Task) -> int:
+			var start_line: int = 39
+			var end_line: int = 41
+			var lines: Array[String] = []
+			var code: String = "# Do nothing if the Path Mode is 'None'
+	if _Bat.PATH_MODE == \"None\":
+		return"
+			for line_number in range(start_line, end_line):
+				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
+			for line_number in range(end_line - start_line):
+				if not lines[line_number].contains(code.get_slice("\n", line_number)):
+					return 0
+			return 1
+	)
+	complete_step()
+	
+	# 0325: AI Code Movement
+	highlight_code(43,45)
+	bubble_add_text([
+		"Next we'll set the next path point if the bat is close to current point its moving towards.",
+		"To do this we'll get the position of the Bat and compare its disance to the point it is trying to move towards with a minimum buffer distance of 0.25.",
+		"So we can say it got close enough before moving to the next target position.",
+		"The next target position will be calculated be incrementing the _TargetPathIndex variable and using the modulo operator (%) make loop back to the first point in the _Path."
+	])
+	bubble_add_code([
+		"# Set the next path point if close to current point
+	if _Bat.position.distance_to(_Path[_TargetPathIndex]) < 0.25:
+		_TargetPathIndex = (_TargetPathIndex + 1) % _Path.size()"
+	])
+	bubble_add_task(
+		"Copy and Paste Code above to Line 43 thru 45.",
+		1,
+		func check_lines_in_script(task: Task) -> int:
+			var start_line: int = 43
+			var end_line: int = 45
+			var lines: Array[String] = []
+			var code: String = "# Set the next path point if close to current point
+	if _Bat.position.distance_to(_Path[_TargetPathIndex]) < 0.25:
+		_TargetPathIndex = (_TargetPathIndex + 1) % _Path.size()"
+			for line_number in range(start_line, end_line):
+				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
+			for line_number in range(end_line - start_line):
+				if not lines[line_number].contains(code.get_slice("\n", line_number)):
+					return 0
+			return 1
+	)
+	complete_step()
+	
+	# 0326: AI Code Movement
+	highlight_code(47,49)
+	bubble_add_text([
+		"Recalculating direction and velocity to the current point will allow us to set how we want the Bat to move.",
+		"First by getting the direction to the target point then multiplying that by the Bat's speed to determine its velocity."
+	])
+	bubble_add_code([
+		"# Recalculate direction and velocity to the current point
+	var _Direction: Vector3 = _Bat.position.direction_to(_Path[_TargetPathIndex])
+	_Bat.velocity = _Direction * _Bat.MovementSpeed"
+	])
+	bubble_add_task(
+		"Copy and Paste Code above to Line 47 thru 49.",
+		1,
+		func check_lines_in_script(task: Task) -> int:
+			var start_line: int = 47
+			var end_line: int = 49
+			var lines: Array[String] = []
+			var code: String = "# Recalculate direction and velocity to the current point
+	var _Direction: Vector3 = _Bat.position.direction_to(_Path[_TargetPathIndex])
+	_Bat.velocity = _Direction * _Bat.MovementSpeed"
+			for line_number in range(start_line, end_line):
+				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
+			for line_number in range(end_line - start_line):
+				if not lines[line_number].contains(code.get_slice("\n", line_number)):
+					return 0
+			return 1
+	)
+	complete_step()
+	
+	# 0327: AI Code Movement
+	highlight_code(51,52)
+	bubble_add_text([
+		"Uisng the move_slide() from the CharacterBody3D Node we can offically move the Bat based on the velocity previously set."
+	])
+	bubble_add_code([
+		"# Move the character
+	_Bat.move_and_slide()"
+	])
+	bubble_add_task(
+		"Copy and Paste Code above to Line 51 thru 52.",
+		1,
+		func check_lines_in_script(task: Task) -> int:
+			var start_line: int = 51
+			var end_line: int = 52
+			var lines: Array[String] = []
+			var code: String = "# Move the character
+	_Bat.move_and_slide()"
+			for line_number in range(start_line, end_line):
+				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
+			for line_number in range(end_line - start_line):
+				if not lines[line_number].contains(code.get_slice("\n", line_number)):
+					return 0
+			return 1
+	)
+	complete_step()
+	
+	# 0330: AI Code Completion
+	bubble_move_and_anchor(interface.script_editor, Bubble.At.CENTER)
+	bubble_set_title("AI Script Completed!")
+	bubble_add_text([
+		"Great job! You've successfuly coded the Unstructured AI for the Bat.",
+		"The last remaining steps for us will be to select which path the Bat will use in the Game Scene."
+	])
+	complete_step()
+	pass
+
+
+func _Steps0400PlayTheGame() -> void:
+	# 0400
+	context_set_3d()
+	highlight_scene_nodes_by_path(["Bat"])
+	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.TOP_LEFT)
+	bubble_set_avatar_at(Bubble.AvatarAt.CENTER)
+	bubble_set_title("Additional Remarks")
+	bubble_add_text([
+		"So far weve avoided talking about the Script attached to the Bat itself.",
+		"You may have noticed that the code we just wrote could have been written in the Bat Node script.", 
+		"Instead, we've employed a common practiced used in the game industry called [b]Seperation of Concerns (SoC)[/b].",
+		"See [url=https://wikipedia.org/wiki/Separation_of_concerns#:~:text=In%20computer%20science%2C%20separation%20of,code%20of%20a%20computer%20program]'Deisgn Principle - Separation of Concerns'[/url] for more info."
+		
+	])
+	complete_step()
+	
+	# 0401
+	bubble_add_text([
+		"This practice is important for our Unstructed AI because we can eliminate a limition that comes with it.", 
+		"That limitation being the lack of ability to re-use the AI for another creature or scene.",
+		"By seperating concerns we eliminate the fact that the AI can only be used for the Bat and here is how we can effectively imagine this practice going forward.",
+	])
+	complete_step()
+	
+	# 0402
+	highlight_scene_nodes_by_path(["Bat", "Bat/AI"])
+	bubble_add_text([
+		"The [b]Bat Node[/b] is concerned about controlling access to its nodes for objects [b]OUTSIDE[/b] of the Bat Scene.",
+		"While the [b]AI Node[/b] will be concerned about any interactions between the nodes [b]INSIDE[/b] the Bat scene.",
+		"So when we want to re-use the Unstructured AI later, we'll only need to copy the AI scene as a child Node to a new enemy.",
+		
+	])
+	bubble_add_texture(BATWORLDVIEWPNG)
+	complete_step()
+	
+	# 0403
+	bubble_move_and_anchor(interface.spatial_editor, Bubble.At.CENTER)
+	bubble_add_text([
+		"But enough about the AI node, let's get back to the task at hand.",
+		"To see our StarPath in action we need to move over to the Bats in the Game.tscn"
+	])
+	complete_step()
+	
+	# 0410
+	context_set_3d()
+	scene_open(ProjectSettings.get_setting("application/run/main_scene"))
+	highlight_scene_nodes_by_path([
+		"Game/Enemies/Bat0",
+		])
+	highlight_inspector_properties(["PATH_MODE"])
+	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.BOTTOM_LEFT)
+	bubble_set_title("Bat Path Mode")
+	bubble_add_text([
+		"The Path Mode for the Bat can be set from the Game Scene by selecting the Path Mode in the Inspector Dock for each indiviual Bat",
+	])
+	bubble_add_task(
+		"Select the [code]Star[/code] Path Mode",
+		1,
+		func select_star_path_mode(task: Task) -> int:
+			var selected_node = EditorInterface.get_selection().get_selected_nodes()[0]
+			return 1 if selected_node.get("PATH_MODE") == "Star" else 0
+	)
+	mouse_move_by_callable(
+		get_tree_item_center_by_path.bind(interface.scene_tree, ("Game/Enemies/Bat0")),
+		find_editor_inspector_property_button_center.bind("PATH_MODE")
+	)
+	mouse_click()
 	complete_step()
 	pass
 
@@ -473,6 +750,7 @@ func _Steps9999Conclusion() -> void:
 	])
 	complete_step()
 
+
 func find_editor_inspector_property_button(name: String) -> Array[Node]:
 	var b = []
 	for child in interface.inspector_editor.find_children("", "EditorProperty", true, false):
@@ -481,6 +759,21 @@ func find_editor_inspector_property_button(name: String) -> Array[Node]:
 	if b.is_empty():
 		print("Could not find Editor Propery: " + name)
 	return b
+	
+func find_editor_inspector_property_button_center(name: String) -> Vector2:
+	var Results: Vector2 = Vector2.ZERO
+	var Btn = find_editor_inspector_property_button(name)
+	
+	if Btn.is_empty():
+		print(Results)
+		return Results
+	
+	Btn = Btn[0]
+	var Rect: Rect2 = Btn.get_global_transform() * Btn.get_rect()
+	Results = Rect.get_center()
+	
+	print(Results)
+	return Results
 
 func get_all_children(node: Node, level: int = 0):
 	var _level: int = level # retains local level property

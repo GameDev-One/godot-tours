@@ -69,6 +69,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.99038)
 
 [node name="Bat0" parent="Enemies" instance=ExtResource("5_umqte")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00300181, 1.30808, -14.1611)
+PATH_MODE = "Star"
 
 [node name="Bat1" parent="Enemies" instance=ExtResource("5_umqte")]
 transform = Transform3D(0.588308, 0, -0.808637, 0, 1, 0, 0.808637, 0, 0.588308, 20.0698, 1.30808, -32.2634)
