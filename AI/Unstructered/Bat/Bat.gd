@@ -13,7 +13,7 @@ extends CharacterBody3D
 
 #region EXPORT VARS
 ## How fast the character moves in the world
-@export_range(0, 5) var MovementSpeed: float = 1.0
+@export_range(0, 5) var MovementSpeed: float = 2.0
 
 ## Sets the behavior for which pattern the Bat will use to move around the world.
 @export_enum("None", "Star") var PATH_MODE: String = "None"

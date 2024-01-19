@@ -37,10 +37,10 @@ func _build() -> void:
 		interface.bottom_button_output.button_pressed = false
 	)
 	
-	#_Steps0000Intro()
-	#_Steps0100FirstLookBatScene()
-	#_Steps0200StarPathForBat()
-	#_Steps0300UnstructedAICode()
+	_Steps0000Intro()
+	_Steps0100FirstLookBatScene()
+	_Steps0200StarPathForBat()
+	_Steps0300UnstructedAICode()
 	_Steps0400PlayTheGame()
 	_Steps9999Conclusion()
 	
@@ -57,6 +57,7 @@ func _Steps0000Intro() -> void:
 		"[center]We'll walk the process of creating your [b]Unstructured AI[/b] that you can use for any future projects.[/center]",
 		"[center][b]Let's get started![/b][/center]",
 		])
+	bubble_set_footer("[center]Unstructured AI Tutorial · Made by [url=https://ko-fi.com/gamedevone][b]GameDevone[/b][/url] · [url=https://forms.gle/hyDPJDu6Qcnxubc59][b][?]Submit Feedback[/b][/url][/center]")
 	queue_command(bubble.avatar.do_wink)
 	complete_step()
 	
@@ -148,10 +149,9 @@ func _Steps0100FirstLookBatScene() -> void:
 	
 	# 0120: Look at the Bat
 	context_set_3d()
-	
 	highlight_controls([interface.spatial_editor])
 	bubble_move_and_anchor(interface.spatial_editor, Bubble.At.BOTTOM_RIGHT)
-	bubble_set_avatar_at(Bubble.AvatarAt.LEFT)
+	bubble_set_avatar_at(Bubble.AvatarAt.RIGHT)
 	bubble_set_title("Look how cute that bat be!")
 	bubble_add_text([
 		"The bat is a creature with a straightforward mindset, comprehending only how to navigate its existence within the game world.",
@@ -260,13 +260,23 @@ func _Steps0100FirstLookBatScene() -> void:
 	highlight_scene_nodes_by_path(["Bat/AI","Bat/StarPath", "Bat/OvalPath"])
 	bubble_set_title("Scene Breakdown: Unstructured AI and Paths")
 	bubble_add_text([
-		"Through a combination of the AI and Path nodes, we will to design the Unstructured AI that the bat will follow.",
+		"Through a combination of the AI and Path nodes, we will design the Unstructured AI for the bat to use.",
 		])
 	queue_command(func show_nodes():
 		for node in EditorInterface.get_edited_scene_root().get_children():
 			if node.has_method("show"):
 				node.show()
 		)
+	complete_step()
+	
+	# 0150: Introducing the Unstructured AI
+	bubble_set_title("UNSTRUCTURED AI?")
+	bubble_add_text([
+	"Well, Unstructered AI is the best approach to implementing AI initially.",
+	"This involves writing code to address specific behaviors, such as repeating an attack pattern or following a specific path.",
+	"Its effectiveness is best seen with one or two simultaneous behaviors but becomes challenging when dealing with more than just a few.",
+	"So lets get into it!"
+	])
 	complete_step()
 
 
@@ -434,10 +444,10 @@ func _Steps0300UnstructedAICode() -> void:
 		"await owner.ready",
 		])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 60.",
+		"Copy and Paste Code above to Line 61.",
 		1,
 		func check_line_in_script(task: Task) -> int:
-			var line_number = 60
+			var line_number = 61
 			var line = EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1)
 			return 1 if line.contains("await owner.ready") else 0
 	)
@@ -452,17 +462,17 @@ func _Steps0300UnstructedAICode() -> void:
 		"_Bat = owner",
 		])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 63.",
+		"Copy and Paste Code above to Line 64.",
 		1,
 		func check_line_in_script(task: Task) -> int:
-			var line_number = 63
+			var line_number = 64
 			var line = EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1)
 			return 1 if line.contains("_Bat = owner") else 0
 	)
 	complete_step()
 	
 	# 0322: AI Code Initialize Variables
-	highlight_code(65,71)
+	highlight_code(65,72)
 	bubble_add_text([
 		"Let's check if the the _Bat has a valid PATH_MODE set before we set the _Path variable.",
 		"The Bat.PATH_MODE is a group of string literals we'll use to determine which path Bat should use at the start of the game.",
@@ -474,20 +484,18 @@ func _Steps0300UnstructedAICode() -> void:
 	bubble_add_code([
 	"if not _Bat.PATH_MODE == \"None\":
 		# Baked points in local coordinates
-		_Path = _Bat.get_node(_Bat.PATH_MODE + \"Path\").curve.get_baked_points()
-		",
+		_Path = _Bat.get_node(_Bat.PATH_MODE + \"Path\").curve.get_baked_points()",
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 69 thru 71.",
+		"Copy and Paste Code above to Line 70.",
 		1,
 		func check_lines_in_script(task: Task) -> int:
-			var start_line: int = 69
+			var start_line: int = 70
 			var end_line: int = 72
 			var lines: Array[String] = []
 			var code: String = "if not _Bat.PATH_MODE == \"None\":
 		# Baked points in local coordinates
-		_Path = _Bat.get_node(_Bat.PATH_MODE + \"Path\").curve.get_baked_points()
-		"
+		_Path = _Bat.get_node(_Bat.PATH_MODE + \"Path\").curve.get_baked_points()"
 			for line_number in range(start_line, end_line):
 				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
 			for line_number in range(end_line - start_line):
@@ -498,26 +506,24 @@ func _Steps0300UnstructedAICode() -> void:
 	complete_step()
 	
 	# 0323: AI Code Initialize Variables
-	highlight_code(73,75)
+	highlight_code(74,76)
 	bubble_add_text([
 		"All points generated by the Path3D via baked_points come in coordinates local to the Bat Scene and not the Game Scene.",
 		"So we will also convert them to the global world space as well."
 	])
 	bubble_add_code([
-	"# Convert to global coordinates
-		for i in _Path.size():
+	"for i in _Path.size():
 			_Path[i] = _Bat.to_global(_Path[i])",
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 73 thru 75.",
+		"Copy and Paste Code above to Line 75.",
 		1,
 		func check_lines_in_script(task: Task) -> int:
-			var start_line: int = 73
-			var end_line: int = 75
+			var start_line: int = 75
+			var end_line: int = 76
 			var lines: Array[String] = []
-			var code: String = "# Convert to global coordinates
-		for i in _Path.size():
-			_Path[i] = _Bat.to_global(_Path[i])"
+			var code: String = "for i in _Path.size():
+									_Path[i] = _Bat.to_global(_Path[i])"
 			for line_number in range(start_line, end_line):
 				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
 			for line_number in range(end_line - start_line):
@@ -528,25 +534,23 @@ func _Steps0300UnstructedAICode() -> void:
 	complete_step()
 	
 	# 0324: AI Code Movement
-	highlight_code(38,53)
+	highlight_code(38,41)
 	bubble_add_text([
 		"To keep the bat's movement in-sync with the FPS, the logic will be located in the _physics_process function.",
 		"We'll again check the PATH_MODE used to exit early if no mode has been set."
 	])
 	bubble_add_code([
-		"# Do nothing if the Path Mode is 'None'
-	if _Bat.PATH_MODE == \"None\":
+		"if _Bat.PATH_MODE == \"None\":
 		return"
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 39 thru 41.",
+		"Copy and Paste Code above to Line 40.",
 		1,
 		func check_lines_in_script(task: Task) -> int:
-			var start_line: int = 39
+			var start_line: int = 40
 			var end_line: int = 41
 			var lines: Array[String] = []
-			var code: String = "# Do nothing if the Path Mode is 'None'
-	if _Bat.PATH_MODE == \"None\":
+			var code: String = "if _Bat.PATH_MODE == \"None\":
 		return"
 			for line_number in range(start_line, end_line):
 				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
@@ -566,19 +570,17 @@ func _Steps0300UnstructedAICode() -> void:
 		"The next target position will be calculated be incrementing the _TargetPathIndex variable and using the modulo operator (%) make loop back to the first point in the _Path."
 	])
 	bubble_add_code([
-		"# Set the next path point if close to current point
-	if _Bat.position.distance_to(_Path[_TargetPathIndex]) < 0.25:
+		"if _Bat.position.distance_to(_Path[_TargetPathIndex]) < 0.25:
 		_TargetPathIndex = (_TargetPathIndex + 1) % _Path.size()"
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 43 thru 45.",
+		"Copy and Paste Code above to Line 44.",
 		1,
 		func check_lines_in_script(task: Task) -> int:
-			var start_line: int = 43
+			var start_line: int = 44
 			var end_line: int = 45
 			var lines: Array[String] = []
-			var code: String = "# Set the next path point if close to current point
-	if _Bat.position.distance_to(_Path[_TargetPathIndex]) < 0.25:
+			var code: String = "if _Bat.position.distance_to(_Path[_TargetPathIndex]) < 0.25:
 		_TargetPathIndex = (_TargetPathIndex + 1) % _Path.size()"
 			for line_number in range(start_line, end_line):
 				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
@@ -596,19 +598,17 @@ func _Steps0300UnstructedAICode() -> void:
 		"First by getting the direction to the target point then multiplying that by the Bat's speed to determine its velocity."
 	])
 	bubble_add_code([
-		"# Recalculate direction and velocity to the current point
-	var _Direction: Vector3 = _Bat.position.direction_to(_Path[_TargetPathIndex])
+		"var _Direction: Vector3 = _Bat.position.direction_to(_Path[_TargetPathIndex])
 	_Bat.velocity = _Direction * _Bat.MovementSpeed"
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 47 thru 49.",
+		"Copy and Paste Code above to Line 48.",
 		1,
 		func check_lines_in_script(task: Task) -> int:
-			var start_line: int = 47
+			var start_line: int = 48
 			var end_line: int = 49
 			var lines: Array[String] = []
-			var code: String = "# Recalculate direction and velocity to the current point
-	var _Direction: Vector3 = _Bat.position.direction_to(_Path[_TargetPathIndex])
+			var code: String = "var _Direction: Vector3 = _Bat.position.direction_to(_Path[_TargetPathIndex])
 	_Bat.velocity = _Direction * _Bat.MovementSpeed"
 			for line_number in range(start_line, end_line):
 				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
@@ -625,24 +625,15 @@ func _Steps0300UnstructedAICode() -> void:
 		"Uisng the move_slide() from the CharacterBody3D Node we can offically move the Bat based on the velocity previously set."
 	])
 	bubble_add_code([
-		"# Move the character
-	_Bat.move_and_slide()"
+		"_Bat.move_and_slide()"
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 51 thru 52.",
+		"Copy and Paste Code above to Line 52.",
 		1,
-		func check_lines_in_script(task: Task) -> int:
-			var start_line: int = 51
-			var end_line: int = 52
-			var lines: Array[String] = []
-			var code: String = "# Move the character
-	_Bat.move_and_slide()"
-			for line_number in range(start_line, end_line):
-				lines.append(EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1))
-			for line_number in range(end_line - start_line):
-				if not lines[line_number].contains(code.get_slice("\n", line_number)):
-					return 0
-			return 1
+		func check_line_in_script(task: Task) -> int:
+			var line_number = 52
+			var line = EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1)
+			return 1 if line.contains("_Bat.move_and_slide()") else 0
 	)
 	complete_step()
 	
@@ -703,14 +694,17 @@ func _Steps0400PlayTheGame() -> void:
 	# 0410
 	context_set_3d()
 	scene_open(ProjectSettings.get_setting("application/run/main_scene"))
+	scene_select_nodes_by_path([
+		"Game/Enemies/Bat0"
+		])
 	highlight_scene_nodes_by_path([
 		"Game/Enemies/Bat0",
 		])
-	highlight_inspector_properties(["PATH_MODE"])
+	highlight_controls([interface.inspector_dock])
 	bubble_move_and_anchor(interface.canvas_item_editor, Bubble.At.BOTTOM_LEFT)
 	bubble_set_title("Bat Path Mode")
 	bubble_add_text([
-		"The Path Mode for the Bat can be set from the Game Scene by selecting the Path Mode in the Inspector Dock for each indiviual Bat",
+		"The Path Mode for the Bat can be set from the Game Scene by selecting the Path Mode in the Inspector Dock.",
 	])
 	bubble_add_task(
 		"Select the [code]Star[/code] Path Mode",
@@ -719,11 +713,34 @@ func _Steps0400PlayTheGame() -> void:
 			var selected_node = EditorInterface.get_selection().get_selected_nodes()[0]
 			return 1 if selected_node.get("PATH_MODE") == "Star" else 0
 	)
+
 	mouse_move_by_callable(
 		get_tree_item_center_by_path.bind(interface.scene_tree, ("Game/Enemies/Bat0")),
 		find_editor_inspector_property_button_center.bind("PATH_MODE")
 	)
 	mouse_click()
+	complete_step()
+	
+	# 0420
+	highlight_controls([interface.run_bar_play_button], true)
+	bubble_set_avatar_at(Bubble.AvatarAt.LEFT)
+	bubble_move_and_anchor(interface.spatial_editor, Bubble.At.TOP_RIGHT)
+	bubble_add_text([
+		"Now we can play the game and see the new Bat AI in action.",
+	])
+	bubble_add_task_press_button(interface.run_bar_play_button)
+	complete_step()
+	
+	# 0430
+	bubble_move_and_anchor(interface.base_control, Bubble.At.CENTER)
+	bubble_set_avatar_at(Bubble.AvatarAt.CENTER)
+	bubble_set_title("ITS ALL COMING TOGETHER!")
+	bubble_add_text([
+		"You did it!",
+		"We now have a Bat that is following the StarPath we created.",
+		"By doing so, you've successfuly created your own Unstructured AI system.",
+		"And now there is a Bat that we can easily modifiy to have several more interesting behaviors."
+		])
 	complete_step()
 	pass
 
@@ -750,8 +767,8 @@ func _Steps9999Conclusion() -> void:
 	])
 	complete_step()
 
-
-func find_editor_inspector_property_button(name: String) -> Array[Node]:
+# Returns all instances of the button with property name
+func find_editor_inspector_property_button(name: String) -> Array:
 	var b = []
 	for child in interface.inspector_editor.find_children("", "EditorProperty", true, false):
 		if child.label == name.capitalize():
@@ -759,21 +776,21 @@ func find_editor_inspector_property_button(name: String) -> Array[Node]:
 	if b.is_empty():
 		print("Could not find Editor Propery: " + name)
 	return b
-	
+
+# Returns the global position of a property in the Editor Inspector
 func find_editor_inspector_property_button_center(name: String) -> Vector2:
 	var Results: Vector2 = Vector2.ZERO
 	var Btn = find_editor_inspector_property_button(name)
 	
 	if Btn.is_empty():
-		print(Results)
 		return Results
 	
 	Btn = Btn[0]
 	var Rect: Rect2 = Btn.get_global_transform() * Btn.get_rect()
 	Results = Rect.get_center()
 	
-	print(Results)
 	return Results
+
 
 func get_all_children(node: Node, level: int = 0):
 	var _level: int = level # retains local level property

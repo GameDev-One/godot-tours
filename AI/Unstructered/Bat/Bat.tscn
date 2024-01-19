@@ -7,7 +7,7 @@
 [sub_resource type="SphereShape3D" id="SphereShape3D_axcf8"]
 radius = 0.75
 
-[sub_resource type="Curve3D" id="Curve3D_045sb"]
+[sub_resource type="Curve3D" id="Curve3D_kk5ye"]
 _data = {
 "points": PackedVector3Array(0, 0, 0, 0, 0, 0, -2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, -2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, -2, 0, 0),
 "tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0)
@@ -40,7 +40,7 @@ script = ExtResource("3_ge7y4")
 shape = SubResource("SphereShape3D_axcf8")
 
 [node name="StarPath" type="Path3D" parent="."]
-curve = SubResource("Curve3D_045sb")
+curve = SubResource("Curve3D_kk5ye")
 
 [node name="OvalPath" type="Path3D" parent="."]
 curve = SubResource("Curve3D_snyi7")
