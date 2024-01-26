@@ -1,6 +1,6 @@
 extends CharacterBody3D
 
-## SHORT DESCRIPTION: 
+## Controls access to the variables, methods and child nodes OUTSIDE of the Bat Scene thru export variables and public methods
 
 #region SIGNALS
 #endregion
@@ -16,7 +16,7 @@ extends CharacterBody3D
 @export_range(0, 5) var MovementSpeed: float = 2.0
 
 ## Sets the behavior for which pattern the Bat will use to move around the world.
-@export_enum("None", "Star") var PATH_MODE: String = "None"
+@export_enum("None", "Star", "Oval") var PATH_MODE: String = "None"
 #endregion
 
 #region PUBLIC VARS
@@ -31,10 +31,9 @@ extends CharacterBody3D
 
 #region PUBLIC METHODS
 func _ready():
-	
 	# Display description of the Bat
 	Description.text = name + "\nPath Mode: " + PATH_MODE + "\nSpeed: " + str(MovementSpeed)
-	
+	pass
 #endregion
 
 #region PRIVATE METHODS

@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://di7ltdl5ja45j"]
+[gd_scene load_steps=6 format=3 uid="uid://di7ltdl5ja45j"]
 
 [ext_resource type="PackedScene" uid="uid://c8jiyn2licuej" path="res://AI/Unstructered/Bat/Model/Model.tscn" id="1_eq381"]
 [ext_resource type="Script" path="res://AI/Unstructered/Bat/Bat.gd" id="1_yqwqn"]
@@ -13,13 +13,6 @@ _data = {
 "tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0)
 }
 point_count = 6
-
-[sub_resource type="Curve3D" id="Curve3D_snyi7"]
-_data = {
-"points": PackedVector3Array(-1.167, 0.604742, 0.00254822, 0.5, 0, -0.003, 0, 0, 0, 0, -0.5, 0, 0, 0, 0, 1, 0.5, 0, 0, 0, 0, 0, 0.5, 0, 1, 2.5, 0, 0, 0, 0, -0.5, 0, 0, 0, 3, 0, 0, 0.5, 0, 0, 0, 0, -1, 2.5, 0, 0, 0, 0, 0, -0.5, 0, -1, 0.5, 0, -0.5, 0, 0, 0, 0, 0, 0, 0, 0),
-"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0, 0)
-}
-point_count = 7
 
 [node name="Bat" type="CharacterBody3D"]
 script = ExtResource("1_yqwqn")
@@ -41,6 +34,3 @@ shape = SubResource("SphereShape3D_axcf8")
 
 [node name="StarPath" type="Path3D" parent="."]
 curve = SubResource("Curve3D_kk5ye")
-
-[node name="OvalPath" type="Path3D" parent="."]
-curve = SubResource("Curve3D_snyi7")

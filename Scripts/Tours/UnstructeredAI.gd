@@ -10,6 +10,13 @@ extends "res://addons/godot_tours/core/tour.gd"
 
 #region CONSTANTS
 const BATWORLDVIEWPNG := preload("res://Scripts/Tours/Assets/BatWorldView.png")
+const BATCELEBRATE := preload("res://Scripts/Tours/Assets/Celebrate.png")
+const BATSUPPORT := preload("res://Scripts/Tours/Assets/Support.png")
+
+const ICONS = {
+	SCENE = "res://Scripts/Tours/Assets/EditorIcons/PlayScene.svg",
+	SCRIPT = "res://Scripts/Tours/Assets/EditorIcons/Script.svg"
+}
 #endregion
 
 #region EXPORT VARS
@@ -41,7 +48,9 @@ func _build() -> void:
 	#_Steps0100FirstLookBatScene()
 	#_Steps0200StarPathForBat()
 	_Steps0300UnstructedAICode()
-	_Steps0400PlayTheGame()
+	#_Steps0400PlayTheGame()
+	#_Step0500OvalPathForBat()
+	_Step0600WrapUp()
 	_Steps9999Conclusion()
 	
 
@@ -136,7 +145,6 @@ func _Steps0100FirstLookBatScene() -> void:
 				return 0
 			return 1 if scene_root.name == "Bat" else 0
 	)
-	highlight_controls([interface.scene_dock], true)
 	queue_command(func bottom_output_close():
 		interface.bottom_button_output.button_pressed = false
 	)
@@ -444,7 +452,7 @@ func _Steps0300UnstructedAICode() -> void:
 		"await owner.ready",
 		])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 58.",
+		"Copy and Paste the code above to Line 58.",
 		1,
 		func check_line_in_script(task: Task) -> int:
 			var line_number = 58
@@ -462,7 +470,7 @@ func _Steps0300UnstructedAICode() -> void:
 		"_Bat = owner",
 		])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 61.",
+		"Copy and Paste the code above to Line 61.",
 		1,
 		func check_line_in_script(task: Task) -> int:
 			var line_number = 61
@@ -487,7 +495,7 @@ func _Steps0300UnstructedAICode() -> void:
 		_Path = _Bat.get_node(_Bat.PATH_MODE + \"Path\").curve.get_baked_points()",
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 67.",
+		"Copy and Paste the code above to Line 67.",
 		1,
 		func check_lines_in_script(task: Task) -> int:
 			var start_line: int = 67
@@ -516,7 +524,7 @@ func _Steps0300UnstructedAICode() -> void:
 			_Path[i] = _Bat.to_global(_Path[i])",
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 72.",
+		"Copy and Paste the code above to Line 72.",
 		1,
 		func check_lines_in_script(task: Task) -> int:
 			var start_line: int = 72
@@ -544,7 +552,7 @@ func _Steps0300UnstructedAICode() -> void:
 		return"
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 40.",
+		"Copy and Paste the code above to Line 40.",
 		1,
 		func check_lines_in_script(task: Task) -> int:
 			var start_line: int = 40
@@ -574,7 +582,7 @@ func _Steps0300UnstructedAICode() -> void:
 		_TargetPathIndex = (_TargetPathIndex + 1) % _Path.size()"
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 44.",
+		"Copy and Paste the code above to Line 44.",
 		1,
 		func check_lines_in_script(task: Task) -> int:
 			var start_line: int = 44
@@ -602,7 +610,7 @@ func _Steps0300UnstructedAICode() -> void:
 	_Bat.velocity = _Direction * _Bat.MovementSpeed"
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 48.",
+		"Copy and Paste the code above to Line 48.",
 		1,
 		func check_lines_in_script(task: Task) -> int:
 			var start_line: int = 48
@@ -628,7 +636,7 @@ func _Steps0300UnstructedAICode() -> void:
 		"_Bat.move_and_slide()"
 	])
 	bubble_add_task(
-		"Copy and Paste Code above to Line 52.",
+		"Copy and Paste the code above to Line 52.",
 		1,
 		func check_line_in_script(task: Task) -> int:
 			var line_number = 52
@@ -739,9 +747,105 @@ func _Steps0400PlayTheGame() -> void:
 		"You did it!",
 		"We now have a Bat that is following the StarPath we created.",
 		"By doing so, you've successfuly created your own Unstructured AI system.",
-		"And now there is a Bat that we can easily modifiy to have several more interesting behaviors."
+		"And now we're going to use that system to quickly make more paths that bats can start with."
+		])
+	bubble_add_texture(BATCELEBRATE)
+	complete_step()
+	pass
+
+
+func _Step0500OvalPathForBat() -> void:
+	# 0500
+	bubble_move_and_anchor(interface.base_control, Bubble.At.CENTER)
+	bubble_set_avatar_at(Bubble.AvatarAt.CENTER)
+	bubble_set_title("CREATING A NEW PATH")
+	bubble_add_text([
+		"To create a fresh path for the bats to use, we'll be condensing the previously followed steps with a few minor modifications along the way.",
+		"[s]1. Open the Bat Scene[/s]",
+		"[s]2. Open the Bat Script[/s]",
+		"[s]2a. Breiefly describe what is happening in this script[/s]",
+		"[s]3. Add a New PATH_MODE Enum called [b]Oval[/b][/s]",
+		"4. Go back to the Bat Scene",
+		"5. Add a Path Node to the Bat Scene",
+		"6. Rename it to [b]Oval Path[/b]",
+		"6a. Add a note that the Renaming is specific to our project and how it exposes different Paths to choose from.",
+		"7. Add the points needed for the Oval Path",
+		"7a. Make a note that we are modifying the Position and In/Out direction of each point",
+		"8. Set another bat to the Oval Path",
+		"9. Play the Game to see the new Path we created" 
+	])
+	complete_step()
+	
+	#0510
+	highlight_scene_nodes_by_path(["Game/Enemies/Bat0"])
+	bubble_move_and_anchor(interface.spatial_editor, Bubble.At.TOP_LEFT)
+	bubble_set_avatar_at(Bubble.AvatarAt.RIGHT)
+	bubble_set_title("GO BACK TO THE BAT.TSCN")
+	bubble_add_task(
+		"Go back to the [img]res://Scripts/Tours/Assets/EditorIcons/PlayScene.svg[/img] [b]Bat.tscn[/b].",
+		1,
+		func task_open_bat_scene(task: Task) -> int:
+			var scene_root: Node = EditorInterface.get_edited_scene_root()
+			if scene_root == null:
+				return 0
+			return 1 if scene_root.name == "Bat" else 0
+	)
+	complete_step()
+	
+	# 0520
+	highlight_scene_nodes_by_path(["Bat"])
+	bubble_move_and_anchor(interface.spatial_editor, Bubble.At.TOP_LEFT)
+	bubble_set_avatar_at(Bubble.AvatarAt.RIGHT)
+	bubble_set_title("OPEN THE BAT SCRIPT")
+	bubble_add_task(
+		"Open the [img]" + ICONS.SCRIPT + "[/img] [b]Bat.gd[/b].",
+		1,
+		func(task: Task) -> int:
+			if not interface.is_in_scripting_context():
+				return 0
+			var open_script: String = EditorInterface.get_script_editor().get_current_script().resource_path
+			return 1 if open_script == "res://AI/Unstructered/Bat/Bat.gd" else 0
+	)
+	complete_step()
+	
+	# 0521
+	highlight_controls([interface.script_editor])
+	bubble_move_and_anchor(interface.script_editor_code_panel, Bubble.At.BOTTOM_RIGHT)
+	bubble_set_title("BAT.GD IN A NUTSHELL")
+	bubble_add_text([
+		"The [img]" + ICONS.SCRIPT + "[/img] [b]Bat.gd[/b] is where we will add access to the new Path we want to create via the export variable [code]PATH_MODE[/code].",
+		"To recall, we set [code]PATH_MODE[/code] for the Bat in the [img]" + ICONS.SCENE + "[/img] [b]Game.tscn[/b] and used that value in our logic for the [img]" + ICONS.SCRIPT + "[/img] [b]AI.gd[/b].",
 		])
 	complete_step()
+	
+	# 0530
+	highlight_code(18,19)
+	bubble_set_title("ADD OVAL AS A NEW PATH MODE")
+	bubble_add_text([
+		"[i]Example:[/i]"
+	])
+	bubble_add_code(["@export_enum(\"None\", \"Star\", \"Oval\") var PATH_MODE: String = \"None\""])
+	bubble_add_task(
+		"Add [code]Oval[/code] to the list of Path Modes.",
+		1,
+		func check_line_in_script(task: Task) -> int:
+			var line_number = 19
+			var line = EditorInterface.get_script_editor().get_current_script().source_code.get_slice("\n", line_number - 1)
+			return 1 if line.contains("@export_enum(\"None\", \"Star\", \"Oval\") var PATH_MODE: String = \"None\"") else 0
+	)
+	complete_step()
+	
+	# 0531
+	highlight_controls([interface.context_switcher_3d_button])
+	bubble_add_text([
+		"Now we back to the Bat.tscn to start creating our new Oval Path",
+	])
+	bubble_add_task_press_button(interface.context_switcher_3d_button)
+	complete_step()
+	pass
+
+
+func _Step0600WrapUp() -> void:
 	pass
 
 
@@ -765,6 +869,7 @@ func _Steps9999Conclusion() -> void:
 		"Remember, practice is key to reinforcing your skills.",
 		"Don't hesitate to revisit any section if needed, and feel free to explore more advanced features as you become more comfortable." , 
 	])
+	bubble_add_texture(BATSUPPORT)
 	complete_step()
 
 # Returns all instances of the button with property name
